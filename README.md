@@ -1,0 +1,2 @@
+# PyTechnicalIndicators_Examples
+Examples for the PyTechnicalIndicators package
