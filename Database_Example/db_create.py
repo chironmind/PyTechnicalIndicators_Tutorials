@@ -2,8 +2,9 @@ import psycopg2
 import requests
 import json
 import datetime
+from PyTechnicalIndicators.Bulk import moving_averages
 import pandas
-import market_indicators as mi
+
 
 url = 'https://api.binance.com/api/v3/klines'
 
@@ -16,14 +17,12 @@ params = [
     ({'symbol': 'ETHUSDT', 'interval': '1d', 'limit': 1000}, 'Ethereum', 'ETH'),
     ({'symbol': 'LINKUSDT', 'interval': '1d', 'limit': 1000}, 'ChainLink', 'LINK'),
     ({'symbol': 'LTCUSDT', 'interval': '1d', 'limit': 1000}, 'Litecoin', 'LTC'),
-    ({'symbol': 'LTCUSDT', 'interval': '1d', 'limit': 1000}, 'Bella Protocol', 'BEL')
 ]
 
+# TODO: Do it one way with Pandas and another just with lists
 
 for p in params:
-    #time.sleep(60)
     r = requests.get(url, params=p[0])
-    print(r.headers)
     out = json.loads(r.text)
 
     open_time = []
