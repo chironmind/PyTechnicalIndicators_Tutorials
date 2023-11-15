@@ -1290,8 +1290,8 @@ macd = [i[0] for i in moving_average_convergence_divergence]
 signal = [i[1] for i in moving_average_convergence_divergence]
 histogram = [i[2] for i in moving_average_convergence_divergence]
 
-signal.append(single_moving_average.signal_line(macd[-10:]))
-macd.append(single_moving_average.macd_line(data['Typical Price'][-26:].tolist() + [latest_typical_price]))
+macd.append(single_moving_average.macd_line(data['Typical Price'][-25:].tolist() + [latest_typical_price]))
+signal.append(single_moving_average.signal_line(macd[-9:]))
 histogram.append(macd[-1] - signal[-1])
 
 fig_macd = make_subplots(
@@ -1332,8 +1332,7 @@ fig_macd.add_trace(
     go.Bar(
         x=data.index[-len(histogram):],
         y=histogram,
-        name='Difference',
-        line={'color': 'Purple'}
+        name='Difference'
     ),
     row=2, col=1
 )
@@ -1376,11 +1375,9 @@ fig_macd.update_layout(
             },
         )
 fig_macd.write_image('assets/macd.png', height=800, width=1600)
-exit()
 
 # Personalised MACD
-# TODO: Same as above, needs to be fixed
-personalised_moving_average_convergence_divergence = bulk_moving_average.moving_average_convergence_divergence(data['Typical Price'].tolist(), 10, 20, 5, 'ema')
+personalised_moving_average_convergence_divergence = bulk_moving_average.moving_average_convergence_divergence(data['Typical Price'].tolist(), 5, 20, 5, 'ema')
 
 # print(personalised_macd)
 # print(personalised_signal)
@@ -1389,8 +1386,8 @@ personalised_macd = [i[0] for i in personalised_moving_average_convergence_diver
 personalised_signal = [i[1] for i in personalised_moving_average_convergence_divergence]
 personalised_histogram = [i[2] for i in personalised_moving_average_convergence_divergence]
 
+personalised_macd.append(single_moving_average.macd_line(data['Typical Price'][-19:].tolist() + [latest_typical_price], 5, 20, 'ema'))
 personalised_signal.append(single_moving_average.signal_line(personalised_macd[-5:], 'ema'))
-personalised_macd.append(single_moving_average.macd_line(data['Typical Price'][-20:].tolist() + [latest_typical_price], 10, 20, 'ema'))
 personalised_histogram.append(personalised_macd[-1] - personalised_signal[-1])
 
 fig_pmacd = make_subplots(
@@ -1431,13 +1428,49 @@ fig_pmacd.add_trace(
     go.Bar(
         x=data.index[-len(personalised_histogram):],
         y=personalised_histogram,
-        name='Difference',
-        line={'color': 'Purple'}
+        name='Difference'
     ),
     row=2, col=1
 )
-fig_pmacd.update_layout(xaxis_rangeslider_visible=False)
-fig_pmacd.show()
+fig_pmacd.update_xaxes(ticks="outside",
+              ticklabelmode="period",
+              tickcolor="white",
+              ticklen=10,
+              minor=dict(
+                 ticklen=5,
+                 dtick=7 * 24 * 60 * 60 * 1000,
+                 tick0=data.index[-1],
+                 griddash='dot',
+                 gridcolor='grey'),
+              rangebreaks=[
+                  {'bounds': ['sat', 'mon']},
+                  {'values': ['2022-09-05', '2022-11-24', '2022-12-26', '2023-01-02', '2023-01-16', '2023-02-20', '2023-04-07', '2023-05-29', '2023-06-19', '2023-07-04', '2023-09-04']}
+                          ],
+              showline=True,
+              linecolor='white',
+              gridcolor='lightpink',
+)
+fig_pmacd.update_layout(
+            xaxis_rangeslider_visible=False,
+            template='plotly_dark',
+            showlegend=True,
+            margin={
+                'r': 50,
+                't': 100,
+                'b': 50,
+                'l': 50
+            },
+            title_text='Personalised MACD',
+            title_font_family="Times New Roman",
+            title_font_color='white',
+            title_font_size=36,
+            font={
+                'family': "Times New Roman",
+                'color': 'white',
+                'size': 18
+            },
+        )
+fig_pmacd.write_image('assets/personalised_macd.png', height=800, width=1600)
 
 # McGinley Dynamic
 
@@ -1491,8 +1524,45 @@ fig_mcginley.add_trace(
         line={'color': '#FF7F50'}
     )
 )
-fig_mcginley.update_layout(xaxis_rangeslider_visible=False)
-fig_mcginley.show()
+fig_mcginley.update_xaxes(ticks="outside",
+              ticklabelmode="period",
+              tickcolor="white",
+              ticklen=10,
+              minor=dict(
+                 ticklen=5,
+                 dtick=7 * 24 * 60 * 60 * 1000,
+                 tick0=data.index[-1],
+                 griddash='dot',
+                 gridcolor='grey'),
+              rangebreaks=[
+                  {'bounds': ['sat', 'mon']},
+                  {'values': ['2022-09-05', '2022-11-24', '2022-12-26', '2023-01-02', '2023-01-16', '2023-02-20', '2023-04-07', '2023-05-29', '2023-06-19', '2023-07-04', '2023-09-04']}
+                          ],
+              showline=True,
+              linecolor='white',
+              gridcolor='lightpink',
+)
+fig_mcginley.update_layout(
+            xaxis_rangeslider_visible=False,
+            template='plotly_dark',
+            showlegend=True,
+            margin={
+                'r': 50,
+                't': 100,
+                'b': 50,
+                'l': 50
+            },
+            title_text='McGinley Dynamic',
+            title_font_family="Times New Roman",
+            title_font_color='white',
+            title_font_size=36,
+            font={
+                'family': "Times New Roman",
+                'color': 'white',
+                'size': 18
+            },
+        )
+fig_mcginley.write_image('assets/mcginley_dynamic.png', height=800, width=1600)
 
 # Moving Average Envelopes
 
@@ -1548,11 +1618,47 @@ fig_ma_envelope.add_trace(
         line={'color': 'Red'}
     )
 )
-fig_ma_envelope.update_layout(xaxis_rangeslider_visible=False)
-fig_ma_envelope.show()
+fig_ma_envelope.update_xaxes(ticks="outside",
+              ticklabelmode="period",
+              tickcolor="white",
+              ticklen=10,
+              minor=dict(
+                 ticklen=5,
+                 dtick=7 * 24 * 60 * 60 * 1000,
+                 tick0=data.index[-1],
+                 griddash='dot',
+                 gridcolor='grey'),
+              rangebreaks=[
+                  {'bounds': ['sat', 'mon']},
+                  {'values': ['2022-09-05', '2022-11-24', '2022-12-26', '2023-01-02', '2023-01-16', '2023-02-20', '2023-04-07', '2023-05-29', '2023-06-19', '2023-07-04', '2023-09-04']}
+                          ],
+              showline=True,
+              linecolor='white',
+              gridcolor='lightpink',
+)
+fig_ma_envelope.update_layout(
+            xaxis_rangeslider_visible=False,
+            template='plotly_dark',
+            showlegend=True,
+            margin={
+                'r': 50,
+                't': 100,
+                'b': 50,
+                'l': 50
+            },
+            title_text='McGinley Dynamic',
+            title_font_family="Times New Roman",
+            title_font_color='white',
+            title_font_size=36,
+            font={
+                'family': "Times New Roman",
+                'color': 'white',
+                'size': 18
+            },
+        )
+fig_ma_envelope.write_image('assets/ma_envelope.png', height=800, width=1600)
 
 # Oscillators
-
 # Stochastic Oscillator
 
 stochastic_oscillator = bulk_oscillators.stochastic_oscillator(data['Close'].tolist())
@@ -1604,8 +1710,46 @@ fig_so.add_trace(
     ),
     row=2, col=1,
 )
-fig_so.update_layout(xaxis_rangeslider_visible=False)
-fig_so.show()
+fig_so.update_xaxes(ticks="outside",
+              ticklabelmode="period",
+              tickcolor="white",
+              ticklen=10,
+              minor=dict(
+                 ticklen=5,
+                 dtick=7 * 24 * 60 * 60 * 1000,
+                 tick0=data.index[-1],
+                 griddash='dot',
+                 gridcolor='grey'),
+              rangebreaks=[
+                  {'bounds': ['sat', 'mon']},
+                  {'values': ['2022-09-05', '2022-11-24', '2022-12-26', '2023-01-02', '2023-01-16', '2023-02-20', '2023-04-07', '2023-05-29', '2023-06-19', '2023-07-04', '2023-09-04']}
+                          ],
+              showline=True,
+              linecolor='white',
+              gridcolor='lightpink',
+)
+fig_so.update_layout(
+            xaxis_rangeslider_visible=False,
+            template='plotly_dark',
+            showlegend=True,
+            margin={
+                'r': 50,
+                't': 100,
+                'b': 50,
+                'l': 50
+            },
+            title_text='Stochastic Oscillator',
+            title_font_family="Times New Roman",
+            title_font_color='white',
+            title_font_size=36,
+            font={
+                'family': "Times New Roman",
+                'color': 'white',
+                'size': 18
+            },
+        )
+fig_so.write_image('assets/stochastic_oscillator.png', height=800, width=1600)
+fig_so.update_yaxes(row=2, col=1, range=[0, 100])
 
 # Personalised Stochastic Oscillator
 
@@ -1680,8 +1824,46 @@ fig_pso.add_trace(
     ),
     row=2, col=1,
 )
-fig_pso.update_layout(xaxis_rangeslider_visible=False)
-fig_pso.show()
+fig_pso.update_xaxes(ticks="outside",
+              ticklabelmode="period",
+              tickcolor="white",
+              ticklen=10,
+              minor=dict(
+                 ticklen=5,
+                 dtick=7 * 24 * 60 * 60 * 1000,
+                 tick0=data.index[-1],
+                 griddash='dot',
+                 gridcolor='grey'),
+              rangebreaks=[
+                  {'bounds': ['sat', 'mon']},
+                  {'values': ['2022-09-05', '2022-11-24', '2022-12-26', '2023-01-02', '2023-01-16', '2023-02-20', '2023-04-07', '2023-05-29', '2023-06-19', '2023-07-04', '2023-09-04']}
+                          ],
+              showline=True,
+              linecolor='white',
+              gridcolor='lightpink',
+)
+fig_pso.update_layout(
+            xaxis_rangeslider_visible=False,
+            template='plotly_dark',
+            showlegend=True,
+            margin={
+                'r': 50,
+                't': 100,
+                'b': 50,
+                'l': 50
+            },
+            title_text='Personalised Stochastic Oscillator',
+            title_font_family="Times New Roman",
+            title_font_color='white',
+            title_font_size=36,
+            font={
+                'family': "Times New Roman",
+                'color': 'white',
+                'size': 18
+            },
+        )
+fig_pso.write_image('assets/personalised_stochastic_oscillator.png', height=800, width=1600)
+fig_pso.update_yaxes(row=2, col=1, range=[0, 100])
 
 # Fast Stochastic
 
@@ -1734,8 +1916,46 @@ fig_fs.add_trace(
     ),
     row=2, col=1,
 )
-fig_fs.update_layout(xaxis_rangeslider_visible=False)
-fig_fs.show()
+fig_fs.update_xaxes(ticks="outside",
+              ticklabelmode="period",
+              tickcolor="white",
+              ticklen=10,
+              minor=dict(
+                 ticklen=5,
+                 dtick=7 * 24 * 60 * 60 * 1000,
+                 tick0=data.index[-1],
+                 griddash='dot',
+                 gridcolor='grey'),
+              rangebreaks=[
+                  {'bounds': ['sat', 'mon']},
+                  {'values': ['2022-09-05', '2022-11-24', '2022-12-26', '2023-01-02', '2023-01-16', '2023-02-20', '2023-04-07', '2023-05-29', '2023-06-19', '2023-07-04', '2023-09-04']}
+                          ],
+              showline=True,
+              linecolor='white',
+              gridcolor='lightpink',
+)
+fig_fs.update_layout(
+            xaxis_rangeslider_visible=False,
+            template='plotly_dark',
+            showlegend=True,
+            margin={
+                'r': 50,
+                't': 100,
+                'b': 50,
+                'l': 50
+            },
+            title_text='Fast Stochastic',
+            title_font_family="Times New Roman",
+            title_font_color='white',
+            title_font_size=36,
+            font={
+                'family': "Times New Roman",
+                'color': 'white',
+                'size': 18
+            },
+        )
+fig_fs.write_image('assets/fast_stochastic.png', height=800, width=1600)
+fig_fs.update_yaxes(row=2, col=1, range=[0, 100])
 
 # Slow Stochastic
 
@@ -1789,8 +2009,46 @@ fig_ss.add_trace(
     ),
     row=2, col=1,
 )
-fig_ss.update_layout(xaxis_rangeslider_visible=False)
-fig_ss.show()
+fig_ss.update_xaxes(ticks="outside",
+              ticklabelmode="period",
+              tickcolor="white",
+              ticklen=10,
+              minor=dict(
+                 ticklen=5,
+                 dtick=7 * 24 * 60 * 60 * 1000,
+                 tick0=data.index[-1],
+                 griddash='dot',
+                 gridcolor='grey'),
+              rangebreaks=[
+                  {'bounds': ['sat', 'mon']},
+                  {'values': ['2022-09-05', '2022-11-24', '2022-12-26', '2023-01-02', '2023-01-16', '2023-02-20', '2023-04-07', '2023-05-29', '2023-06-19', '2023-07-04', '2023-09-04']}
+                          ],
+              showline=True,
+              linecolor='white',
+              gridcolor='lightpink',
+)
+fig_ss.update_layout(
+            xaxis_rangeslider_visible=False,
+            template='plotly_dark',
+            showlegend=True,
+            margin={
+                'r': 50,
+                't': 100,
+                'b': 50,
+                'l': 50
+            },
+            title_text='Slow Stochastic',
+            title_font_family="Times New Roman",
+            title_font_color='white',
+            title_font_size=36,
+            font={
+                'family': "Times New Roman",
+                'color': 'white',
+                'size': 18
+            },
+        )
+fig_ss.write_image('assets/slow_stochastic.png', height=800, width=1600)
+fig_ss.update_yaxes(row=2, col=1, range=[0, 100])
 
 # Slow Stochastic DS
 
@@ -1844,8 +2102,46 @@ fig_ssd.add_trace(
     ),
     row=2, col=1,
 )
-fig_ssd.update_layout(xaxis_rangeslider_visible=False)
-fig_ssd.show()
+fig_ssd.update_xaxes(ticks="outside",
+              ticklabelmode="period",
+              tickcolor="white",
+              ticklen=10,
+              minor=dict(
+                 ticklen=5,
+                 dtick=7 * 24 * 60 * 60 * 1000,
+                 tick0=data.index[-1],
+                 griddash='dot',
+                 gridcolor='grey'),
+              rangebreaks=[
+                  {'bounds': ['sat', 'mon']},
+                  {'values': ['2022-09-05', '2022-11-24', '2022-12-26', '2023-01-02', '2023-01-16', '2023-02-20', '2023-04-07', '2023-05-29', '2023-06-19', '2023-07-04', '2023-09-04']}
+                          ],
+              showline=True,
+              linecolor='white',
+              gridcolor='lightpink',
+)
+fig_ssd.update_layout(
+            xaxis_rangeslider_visible=False,
+            template='plotly_dark',
+            showlegend=True,
+            margin={
+                'r': 50,
+                't': 100,
+                'b': 50,
+                'l': 50
+            },
+            title_text='Slow Stochastic DS',
+            title_font_family="Times New Roman",
+            title_font_color='white',
+            title_font_size=36,
+            font={
+                'family': "Times New Roman",
+                'color': 'white',
+                'size': 18
+            },
+        )
+fig_ssd.write_image('assets/slow_stochastic_ds.png', height=800, width=1600)
+fig_ssd.update_yaxes(row=2, col=1, range=[0, 100])
 
 # Visualizing the stochastics
 
@@ -1906,7 +2202,7 @@ fig_all_so.add_trace(
         x=data.index[-len(slow_stochastic):],
         y=slow_stochastic,
         name='Slow Stochastic',
-        line={'color': 'Blue'}
+        line={'color': 'teal'}
     ),
     row=2, col=1,
 )
@@ -1915,7 +2211,7 @@ fig_all_so.add_trace(
         x=data.index[-len(slow_stochastic_ds):],
         y=slow_stochastic_ds,
         name='Slow Stochastic DS',
-        line={'color': 'Blue'}
+        line={'color': 'aqua'}
     ),
     row=2, col=1,
 )
@@ -1937,8 +2233,46 @@ fig_all_so.add_trace(
     ),
     row=2, col=1,
 )
-fig_all_so.update_layout(xaxis_rangeslider_visible=False)
-fig_all_so.show()
+fig_all_so.update_xaxes(ticks="outside",
+              ticklabelmode="period",
+              tickcolor="white",
+              ticklen=10,
+              minor=dict(
+                 ticklen=5,
+                 dtick=7 * 24 * 60 * 60 * 1000,
+                 tick0=data.index[-1],
+                 griddash='dot',
+                 gridcolor='grey'),
+              rangebreaks=[
+                  {'bounds': ['sat', 'mon']},
+                  {'values': ['2022-09-05', '2022-11-24', '2022-12-26', '2023-01-02', '2023-01-16', '2023-02-20', '2023-04-07', '2023-05-29', '2023-06-19', '2023-07-04', '2023-09-04']}
+                          ],
+              showline=True,
+              linecolor='white',
+              gridcolor='lightpink',
+)
+fig_all_so.update_layout(
+            xaxis_rangeslider_visible=False,
+            template='plotly_dark',
+            showlegend=True,
+            margin={
+                'r': 50,
+                't': 100,
+                'b': 50,
+                'l': 50
+            },
+            title_text='Stochastics',
+            title_font_family="Times New Roman",
+            title_font_color='white',
+            title_font_size=36,
+            font={
+                'family': "Times New Roman",
+                'color': 'white',
+                'size': 18
+            },
+        )
+fig_all_so.write_image('assets/stochastics.png', height=800, width=1600)
+fig_all_so.update_yaxes(row=2, col=1, range=[0, 100])
 
 # Money Flow Index
 
@@ -1991,8 +2325,46 @@ fig_mfi.add_trace(
     ),
     row=2, col=1,
 )
-fig_mfi.update_layout(xaxis_rangeslider_visible=False)
-fig_mfi.show()
+fig_mfi.update_xaxes(ticks="outside",
+              ticklabelmode="period",
+              tickcolor="white",
+              ticklen=10,
+              minor=dict(
+                 ticklen=5,
+                 dtick=7 * 24 * 60 * 60 * 1000,
+                 tick0=data.index[-1],
+                 griddash='dot',
+                 gridcolor='grey'),
+              rangebreaks=[
+                  {'bounds': ['sat', 'mon']},
+                  {'values': ['2022-09-05', '2022-11-24', '2022-12-26', '2023-01-02', '2023-01-16', '2023-02-20', '2023-04-07', '2023-05-29', '2023-06-19', '2023-07-04', '2023-09-04']}
+                          ],
+              showline=True,
+              linecolor='white',
+              gridcolor='lightpink',
+)
+fig_mfi.update_layout(
+            xaxis_rangeslider_visible=False,
+            template='plotly_dark',
+            showlegend=True,
+            margin={
+                'r': 50,
+                't': 100,
+                'b': 50,
+                'l': 50
+            },
+            title_text='Money Flow Index',
+            title_font_family="Times New Roman",
+            title_font_color='white',
+            title_font_size=36,
+            font={
+                'family': "Times New Roman",
+                'color': 'white',
+                'size': 18
+            },
+        )
+fig_mfi.write_image('assets/money_flow_index.png', height=800, width=1600)
+fig_mfi.update_yaxes(row=2, col=1, range=[0, 100])
 
 # Personalised Money Flow Index
 
@@ -2067,11 +2439,48 @@ fig_pmfi.add_trace(
     ),
     row=2, col=1,
 )
-fig_pmfi.update_layout(xaxis_rangeslider_visible=False)
-fig_pmfi.show()
+fig_pmfi.update_xaxes(ticks="outside",
+              ticklabelmode="period",
+              tickcolor="white",
+              ticklen=10,
+              minor=dict(
+                 ticklen=5,
+                 dtick=7 * 24 * 60 * 60 * 1000,
+                 tick0=data.index[-1],
+                 griddash='dot',
+                 gridcolor='grey'),
+              rangebreaks=[
+                  {'bounds': ['sat', 'mon']},
+                  {'values': ['2022-09-05', '2022-11-24', '2022-12-26', '2023-01-02', '2023-01-16', '2023-02-20', '2023-04-07', '2023-05-29', '2023-06-19', '2023-07-04', '2023-09-04']}
+                          ],
+              showline=True,
+              linecolor='white',
+              gridcolor='lightpink',
+)
+fig_pmfi.update_layout(
+            xaxis_rangeslider_visible=False,
+            template='plotly_dark',
+            showlegend=True,
+            margin={
+                'r': 50,
+                't': 100,
+                'b': 50,
+                'l': 50
+            },
+            title_text='Personalised Money Flow Index',
+            title_font_family="Times New Roman",
+            title_font_color='white',
+            title_font_size=36,
+            font={
+                'family': "Times New Roman",
+                'color': 'white',
+                'size': 18
+            },
+        )
+fig_pmfi.write_image('assets/personalised_money_flow_index.png', height=800, width=1600)
+fig_pmfi.update_yaxes(row=2, col=1, range=[0, 100])
 
 # Chaikin Oscillator
-
 chaikin_oscillator = bulk_oscillators.chaikin_oscillator(data['High'].tolist(), data['Low'].tolist(), data['Close'].tolist(), data['Volume'].tolist())
 
 # print(chaikin_oscillator)
@@ -2112,17 +2521,51 @@ fig_co.add_trace(
     go.Scatter(
         x=data.index[-len(chaikin_oscillator):],
         y=[0 for i in chaikin_oscillator],
-        name='Overbought',
         line={'color': 'Gray'}
     ),
     row=2, col=1,
 )
-
-fig_co.update_layout(xaxis_rangeslider_visible=False)
-fig_co.show()
+fig_co.update_xaxes(ticks="outside",
+              ticklabelmode="period",
+              tickcolor="white",
+              ticklen=10,
+              minor=dict(
+                 ticklen=5,
+                 dtick=7 * 24 * 60 * 60 * 1000,
+                 tick0=data.index[-1],
+                 griddash='dot',
+                 gridcolor='grey'),
+              rangebreaks=[
+                  {'bounds': ['sat', 'mon']},
+                  {'values': ['2022-09-05', '2022-11-24', '2022-12-26', '2023-01-02', '2023-01-16', '2023-02-20', '2023-04-07', '2023-05-29', '2023-06-19', '2023-07-04', '2023-09-04']}
+                          ],
+              showline=True,
+              linecolor='white',
+              gridcolor='lightpink',
+)
+fig_co.update_layout(
+            xaxis_rangeslider_visible=False,
+            template='plotly_dark',
+            showlegend=True,
+            margin={
+                'r': 50,
+                't': 100,
+                'b': 50,
+                'l': 50
+            },
+            title_text='Chaikin Oscillator',
+            title_font_family="Times New Roman",
+            title_font_color='white',
+            title_font_size=36,
+            font={
+                'family': "Times New Roman",
+                'color': 'white',
+                'size': 18
+            },
+        )
+fig_co.write_image('assets/chaikin_oscillator.png', height=800, width=1600)
 
 # Personalised Chaikin Oscillator
-
 personalised_co = bulk_oscillators.chaikin_oscillator(data['High'].tolist(), data['Low'].tolist(), data['Close'].tolist(), data['Volume'].tolist(), 5, 20, 'ema')
 
 # print(personalised_co)
@@ -2162,17 +2605,51 @@ fig_pco.add_trace(
     go.Scatter(
         x=data.index[-len(personalised_co):],
         y=[0 for i in personalised_co],
-        name='Overbought',
         line={'color': 'Gray'}
     ),
     row=2, col=1,
 )
-
-fig_pco.update_layout(xaxis_rangeslider_visible=False)
-fig_pco.show()
+fig_pco.update_xaxes(ticks="outside",
+              ticklabelmode="period",
+              tickcolor="white",
+              ticklen=10,
+              minor=dict(
+                 ticklen=5,
+                 dtick=7 * 24 * 60 * 60 * 1000,
+                 tick0=data.index[-1],
+                 griddash='dot',
+                 gridcolor='grey'),
+              rangebreaks=[
+                  {'bounds': ['sat', 'mon']},
+                  {'values': ['2022-09-05', '2022-11-24', '2022-12-26', '2023-01-02', '2023-01-16', '2023-02-20', '2023-04-07', '2023-05-29', '2023-06-19', '2023-07-04', '2023-09-04']}
+                          ],
+              showline=True,
+              linecolor='white',
+              gridcolor='lightpink',
+)
+fig_pco.update_layout(
+            xaxis_rangeslider_visible=False,
+            template='plotly_dark',
+            showlegend=True,
+            margin={
+                'r': 50,
+                't': 100,
+                'b': 50,
+                'l': 50
+            },
+            title_text='Personalised Chaikin Oscillator',
+            title_font_family="Times New Roman",
+            title_font_color='white',
+            title_font_size=36,
+            font={
+                'family': "Times New Roman",
+                'color': 'white',
+                'size': 18
+            },
+        )
+fig_pco.write_image('assets/personalised_chaikin_oscillator.png', height=800, width=1600)
 
 # Williams %R
-
 weekly_williams_percent_r = bulk_oscillators.williams_percent_r(data['High'].tolist(), data['Low'].tolist(), data['Close'].tolist(), 5)
 monthly_williams_percent_r = bulk_oscillators.williams_percent_r(data['High'].tolist(), data['Low'].tolist(), data['Close'].tolist(), 20)
 quarterly_williams_percent_r = bulk_oscillators.williams_percent_r(data['High'].tolist(), data['Low'].tolist(), data['Close'].tolist(), 60)
@@ -2242,21 +2719,139 @@ fig_wr.add_trace(
     ),
     row=2, col=1,
 )
-fig_wr.update_layout(xaxis_rangeslider_visible=False)
-fig_wr.show()
+fig_wr.update_xaxes(ticks="outside",
+              ticklabelmode="period",
+              tickcolor="white",
+              ticklen=10,
+              minor=dict(
+                 ticklen=5,
+                 dtick=7 * 24 * 60 * 60 * 1000,
+                 tick0=data.index[-1],
+                 griddash='dot',
+                 gridcolor='grey'),
+              rangebreaks=[
+                  {'bounds': ['sat', 'mon']},
+                  {'values': ['2022-09-05', '2022-11-24', '2022-12-26', '2023-01-02', '2023-01-16', '2023-02-20', '2023-04-07', '2023-05-29', '2023-06-19', '2023-07-04', '2023-09-04']}
+                          ],
+              showline=True,
+              linecolor='white',
+              gridcolor='lightpink',
+)
+fig_wr.update_layout(
+            xaxis_rangeslider_visible=False,
+            template='plotly_dark',
+            showlegend=True,
+            margin={
+                'r': 50,
+                't': 100,
+                'b': 50,
+                'l': 50
+            },
+            title_text='Williams %R',
+            title_font_family="Times New Roman",
+            title_font_color='white',
+            title_font_size=36,
+            font={
+                'family': "Times New Roman",
+                'color': 'white',
+                'size': 18
+            },
+        )
+fig_wr.write_image('assets/williams_r.png', height=800, width=1600)
+fig_wr.update_yaxes(row=2, col=1, range=[0, 100])
 
 # Strength Indicators
 
 # Relative Strength Index
-
 rsi = bulk_strength_indicators.relative_strength_index(data['Typical Price'].tolist())
-
 # print(rsi)
-
 rsi.append(single_strength_indicators.relative_strength_index(data['Typical Price'][-13:].tolist() + [latest_typical_price]))
 
-# Personalised RSI
+fig_rsi = make_subplots(
+    rows=2,
+    cols=1,
+    specs=[[{"type": "candlestick"}], [{"type": "scatter"}]]
+)
+fig_rsi.add_trace(
+    go.Candlestick(
+        x=data.index,
+        open=data['Open'],
+        low=data['Low'],
+        high=data['High'],
+        close=data['Close'],
+        name='S&P 500'
+    ),
+    row=1, col=1
+)
+fig_rsi.add_trace(
+    go.Scatter(
+        x=data.index[-len(rsi):],
+        y=rsi,
+        name='RSI',
+        line={'color': '#E9967A'}
+    ),
+    row=2, col=1,
+)
+fig_rsi.add_trace(
+    go.Scatter(
+        x=data.index[-len(rsi):],
+        y=[30 for i in rsi],
+        name='Oversold',
+        line={'color': 'Green'}
+    ),
+    row=2, col=1,
+)
+fig_rsi.add_trace(
+    go.Scatter(
+        x=data.index[-len(rsi):],
+        y=[70 for i in rsi],
+        name='Overbought',
+        line={'color': 'Red'}
+    ),
+    row=2, col=1,
+)
+fig_rsi.update_xaxes(ticks="outside",
+              ticklabelmode="period",
+              tickcolor="white",
+              ticklen=10,
+              minor=dict(
+                 ticklen=5,
+                 dtick=7 * 24 * 60 * 60 * 1000,
+                 tick0=data.index[-1],
+                 griddash='dot',
+                 gridcolor='grey'),
+              rangebreaks=[
+                  {'bounds': ['sat', 'mon']},
+                  {'values': ['2022-09-05', '2022-11-24', '2022-12-26', '2023-01-02', '2023-01-16', '2023-02-20', '2023-04-07', '2023-05-29', '2023-06-19', '2023-07-04', '2023-09-04']}
+                          ],
+              showline=True,
+              linecolor='white',
+              gridcolor='lightpink',
+)
+fig_rsi.update_layout(
+            xaxis_rangeslider_visible=False,
+            template='plotly_dark',
+            showlegend=True,
+            margin={
+                'r': 50,
+                't': 100,
+                'b': 50,
+                'l': 50
+            },
+            title_text='Relative Strength Indicator',
+            title_font_family="Times New Roman",
+            title_font_color='white',
+            title_font_size=36,
+            font={
+                'family': "Times New Roman",
+                'color': 'white',
+                'size': 18
+            },
+        )
+fig_rsi.write_image('assets/rsi.png', height=800, width=1600)
+fig_rsi.update_yaxes(row=2, col=1, range=[0, 100])
 
+# Personalised RSI
 weekly_rsi = bulk_strength_indicators.relative_strength_index(data['Typical Price'].tolist(), 5, 'ema')
 monthly_rsi = bulk_strength_indicators.relative_strength_index(data['Typical Price'].tolist(), 20, 'ema')
 quarterly_rsi = bulk_strength_indicators.relative_strength_index(data['Typical Price'].tolist(), 60, 'ema')
@@ -2267,12 +2862,111 @@ weekly_rsi.append(single_strength_indicators.relative_strength_index(data['Typic
 monthly_rsi.append(single_strength_indicators.relative_strength_index(data['Typical Price'][-19:].tolist() + [latest_typical_price], 'ema'))
 quarterly_rsi.append(single_strength_indicators.relative_strength_index(data['Typical Price'][-59:].tolist() + [latest_typical_price], 'ema'))
 
+fig_prsi = make_subplots(
+    rows=2,
+    cols=1,
+    specs=[[{"type": "candlestick"}], [{"type": "scatter"}]]
+)
+fig_prsi.add_trace(
+    go.Candlestick(
+        x=data.index,
+        open=data['Open'],
+        low=data['Low'],
+        high=data['High'],
+        close=data['Close'],
+        name='S&P 500'
+    ),
+    row=1, col=1
+)
+fig_prsi.add_trace(
+    go.Scatter(
+        x=data.index[-len(rsi):],
+        y=weekly_rsi,
+        name='Weekly RSI',
+        line={'color': '#FFE4C4'}
+    ),
+    row=2, col=1,
+)
+fig_prsi.add_trace(
+    go.Scatter(
+        x=data.index[-len(monthly_rsi):],
+        y=monthly_rsi,
+        name='Monthly RSI',
+        line={'color': '#E9967A'}
+    ),
+    row=2, col=1,
+)
+fig_prsi.add_trace(
+    go.Scatter(
+        x=data.index[-len(quarterly_rsi):],
+        y=quarterly_rsi,
+        name='Quarterly RSI',
+        line={'color': '#FF7F50'}
+    ),
+    row=2, col=1,
+)
+fig_prsi.add_trace(
+    go.Scatter(
+        x=data.index[-len(rsi):],
+        y=[30 for i in rsi],
+        name='Oversold',
+        line={'color': 'Green'}
+    ),
+    row=2, col=1,
+)
+fig_prsi.add_trace(
+    go.Scatter(
+        x=data.index[-len(rsi):],
+        y=[70 for i in rsi],
+        name='Overbought',
+        line={'color': 'Red'}
+    ),
+    row=2, col=1,
+)
+fig_prsi.update_xaxes(ticks="outside",
+              ticklabelmode="period",
+              tickcolor="white",
+              ticklen=10,
+              minor=dict(
+                 ticklen=5,
+                 dtick=7 * 24 * 60 * 60 * 1000,
+                 tick0=data.index[-1],
+                 griddash='dot',
+                 gridcolor='grey'),
+              rangebreaks=[
+                  {'bounds': ['sat', 'mon']},
+                  {'values': ['2022-09-05', '2022-11-24', '2022-12-26', '2023-01-02', '2023-01-16', '2023-02-20', '2023-04-07', '2023-05-29', '2023-06-19', '2023-07-04', '2023-09-04']}
+                          ],
+              showline=True,
+              linecolor='white',
+              gridcolor='lightpink',
+)
+fig_prsi.update_layout(
+            xaxis_rangeslider_visible=False,
+            template='plotly_dark',
+            showlegend=True,
+            margin={
+                'r': 50,
+                't': 100,
+                'b': 50,
+                'l': 50
+            },
+            title_text='Personalised Relative Strength Indicator',
+            title_font_family="Times New Roman",
+            title_font_color='white',
+            title_font_size=36,
+            font={
+                'family': "Times New Roman",
+                'color': 'white',
+                'size': 18
+            },
+        )
+fig_prsi.write_image('assets/personalised_rsi.png', height=800, width=1600)
+fig_prsi.update_yaxes(row=2, col=1, range=[0, 100])
+
 # Accumulation Distribution Indicator
-
 adi = bulk_strength_indicators.accumulation_distribution_indicator(data['High'].tolist(), data['Low'].tolist(), data['Close'].tolist(), data['Volume'].tolist())
-
 # print(adi)
-
 adi.append(single_strength_indicators.accumulation_distribution_indicator(
     latest_high,
     latest_low,
@@ -2280,6 +2974,71 @@ adi.append(single_strength_indicators.accumulation_distribution_indicator(
     latest_volume,
     adi[-1]
 ))
+
+fig_adi = make_subplots(
+    rows=2,
+    cols=1,
+    specs=[[{"type": "candlestick"}], [{"type": "scatter"}]]
+)
+fig_adi.add_trace(
+    go.Candlestick(
+        x=data.index,
+        open=data['Open'],
+        low=data['Low'],
+        high=data['High'],
+        close=data['Close'],
+        name='S&P 500'
+    ),
+    row=1, col=1
+)
+fig_adi.add_trace(
+    go.Scatter(
+        x=data.index[-len(adi):],
+        y=adi,
+        name='ADI',
+        line={'color': '#FFE4C4'}
+    ),
+    row=2, col=1,
+)
+fig_adi.update_xaxes(ticks="outside",
+              ticklabelmode="period",
+              tickcolor="white",
+              ticklen=10,
+              minor=dict(
+                 ticklen=5,
+                 dtick=7 * 24 * 60 * 60 * 1000,
+                 tick0=data.index[-1],
+                 griddash='dot',
+                 gridcolor='grey'),
+              rangebreaks=[
+                  {'bounds': ['sat', 'mon']},
+                  {'values': ['2022-09-05', '2022-11-24', '2022-12-26', '2023-01-02', '2023-01-16', '2023-02-20', '2023-04-07', '2023-05-29', '2023-06-19', '2023-07-04', '2023-09-04']}
+                          ],
+              showline=True,
+              linecolor='white',
+              gridcolor='lightpink',
+)
+fig_adi.update_layout(
+            xaxis_rangeslider_visible=False,
+            template='plotly_dark',
+            showlegend=True,
+            margin={
+                'r': 50,
+                't': 100,
+                'b': 50,
+                'l': 50
+            },
+            title_text='Accumulation Distribution Indicator',
+            title_font_family="Times New Roman",
+            title_font_color='white',
+            title_font_size=36,
+            font={
+                'family': "Times New Roman",
+                'color': 'white',
+                'size': 18
+            },
+        )
+fig_adi.write_image('assets/adi.png', height=800, width=1600)
 
 # Directional Indicator, Directional Index, Average Directional Index, Average Directional Index Rating
 
@@ -2306,10 +3065,10 @@ quarterly_adxr = bulk_strength_indicators.average_directional_index_rating(weekl
 
 weekly_di.append(single_strength_indicators.directional_indicator_known_previous(
     latest_high,
-    data['High'][-1],
+    data['High'].iloc[-1],
     latest_low,
-    data['Low'][-1],
-    data['Close'][-1],
+    data['Low'].iloc[-1],
+    data['Close'].iloc[-1],
     weekly_di[-1][2],
     weekly_di[-1][0],
     weekly_di[-1][1],
@@ -2319,10 +3078,95 @@ weekly_dx.append(single_strength_indicators.directional_index(weekly_di[-1][0], 
 weekly_adx.append(single_strength_indicators.average_directional_index(weekly_dx[-5:], 'ema'))
 weekly_adxr.append(single_strength_indicators.average_directional_index_rating(weekly_adx[-1], weekly_adx[-5]))
 
+
+fig_wr = make_subplots(
+    rows=2,
+    cols=1,
+    specs=[[{"type": "candlestick"}], [{"type": "scatter"}]]
+)
+fig_wr.add_trace(
+    go.Candlestick(
+        x=data.index,
+        open=data['Open'],
+        low=data['Low'],
+        high=data['High'],
+        close=data['Close'],
+        name='S&P 500'
+    ),
+    row=1, col=1
+)
+fig_wr.add_trace(
+    go.Scatter(
+        x=data.index[-len(weekly_dx):],
+        y=weekly_dx,
+        name='Weekly DX',
+        line={'color': '#FFE4C4'}
+    ),
+    row=2, col=1,
+)
+fig_wr.add_trace(
+    go.Scatter(
+        x=data.index[-len(weekly_adx):],
+        y=weekly_adx,
+        name='Weekly ADX',
+        line={'color': '#E9967A'}
+    ),
+    row=2, col=1,
+)
+fig_wr.add_trace(
+    go.Scatter(
+        x=data.index[-len(weekly_adxr):],
+        y=weekly_adxr,
+        name='Weekly ADX Rating',
+        line={'color': '#FF7F50'}
+    ),
+    row=2, col=1,
+)
+fig_wr.update_xaxes(ticks="outside",
+              ticklabelmode="period",
+              tickcolor="white",
+              ticklen=10,
+              minor=dict(
+                 ticklen=5,
+                 dtick=7 * 24 * 60 * 60 * 1000,
+                 tick0=data.index[-1],
+                 griddash='dot',
+                 gridcolor='grey'),
+              rangebreaks=[
+                  {'bounds': ['sat', 'mon']},
+                  {'values': ['2022-09-05', '2022-11-24', '2022-12-26', '2023-01-02', '2023-01-16', '2023-02-20', '2023-04-07', '2023-05-29', '2023-06-19', '2023-07-04', '2023-09-04']}
+                          ],
+              showline=True,
+              linecolor='white',
+              gridcolor='lightpink',
+)
+fig_wr.update_layout(
+            xaxis_rangeslider_visible=False,
+            template='plotly_dark',
+            showlegend=True,
+            margin={
+                'r': 50,
+                't': 100,
+                'b': 50,
+                'l': 50
+            },
+            title_text='Weekly Directional Index',
+            title_font_family="Times New Roman",
+            title_font_color='white',
+            title_font_size=36,
+            font={
+                'family': "Times New Roman",
+                'color': 'white',
+                'size': 18
+            },
+        )
+fig_wr.write_image('assets/weekly_adx.png', height=800, width=1600)
+fig_wr.update_yaxes(row=2, col=1, range=[0, 100])
+exit()
+
 # Momentum Indicators
 
 # Rate of Change
-
 weekly_roc = bulk_momentum_indicators.rate_of_change(data['Typical Price'].tolist(), 5)
 monthly_roc = bulk_momentum_indicators.rate_of_change(data['Typical Price'].tolist(), 20)
 quarterly_roc = bulk_momentum_indicators.rate_of_change(data['Typical Price'].tolist(), 60)
