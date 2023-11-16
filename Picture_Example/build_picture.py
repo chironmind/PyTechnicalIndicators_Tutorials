@@ -3053,15 +3053,15 @@ monthly_di = bulk_strength_indicators.directional_indicator(data['High'].tolist(
 monthly_positive_di = [di[0] for di in monthly_di]
 monthly_negative_di = [di[1] for di in monthly_di]
 monthly_dx = bulk_strength_indicators.directional_index(monthly_positive_di, monthly_negative_di)
-monthly_adx = bulk_strength_indicators.average_directional_index(weekly_dx, 20, 'ema')
-monthly_adxr = bulk_strength_indicators.average_directional_index_rating(weekly_adx, 20)
+monthly_adx = bulk_strength_indicators.average_directional_index(monthly_dx, 20, 'ema')
+monthly_adxr = bulk_strength_indicators.average_directional_index_rating(monthly_adx, 20)
 
 quarterly_di = bulk_strength_indicators.directional_indicator(data['High'].tolist(), data['Low'].tolist(), data['Close'].tolist(), 60)
-quarterly_positive_di = [di[0] for di in weekly_di]
-quarterly_negative_di = [di[1] for di in weekly_di]
+quarterly_positive_di = [di[0] for di in quarterly_di]
+quarterly_negative_di = [di[1] for di in quarterly_di]
 quarterly_dx = bulk_strength_indicators.directional_index(quarterly_positive_di, quarterly_negative_di)
-quarterly_adx = bulk_strength_indicators.average_directional_index(weekly_dx, 60, 'ema')
-quarterly_adxr = bulk_strength_indicators.average_directional_index_rating(weekly_adx, 60)
+quarterly_adx = bulk_strength_indicators.average_directional_index(quarterly_dx, 60, 'ema')
+quarterly_adxr = bulk_strength_indicators.average_directional_index_rating(quarterly_adx, 60)
 
 weekly_di.append(single_strength_indicators.directional_indicator_known_previous(
     latest_high,
@@ -3078,13 +3078,12 @@ weekly_dx.append(single_strength_indicators.directional_index(weekly_di[-1][0], 
 weekly_adx.append(single_strength_indicators.average_directional_index(weekly_dx[-5:], 'ema'))
 weekly_adxr.append(single_strength_indicators.average_directional_index_rating(weekly_adx[-1], weekly_adx[-5]))
 
-
-fig_wr = make_subplots(
+fig_wdx = make_subplots(
     rows=2,
     cols=1,
     specs=[[{"type": "candlestick"}], [{"type": "scatter"}]]
 )
-fig_wr.add_trace(
+fig_wdx.add_trace(
     go.Candlestick(
         x=data.index,
         open=data['Open'],
@@ -3095,7 +3094,7 @@ fig_wr.add_trace(
     ),
     row=1, col=1
 )
-fig_wr.add_trace(
+fig_wdx.add_trace(
     go.Scatter(
         x=data.index[-len(weekly_dx):],
         y=weekly_dx,
@@ -3104,7 +3103,7 @@ fig_wr.add_trace(
     ),
     row=2, col=1,
 )
-fig_wr.add_trace(
+fig_wdx.add_trace(
     go.Scatter(
         x=data.index[-len(weekly_adx):],
         y=weekly_adx,
@@ -3113,7 +3112,7 @@ fig_wr.add_trace(
     ),
     row=2, col=1,
 )
-fig_wr.add_trace(
+fig_wdx.add_trace(
     go.Scatter(
         x=data.index[-len(weekly_adxr):],
         y=weekly_adxr,
@@ -3122,7 +3121,7 @@ fig_wr.add_trace(
     ),
     row=2, col=1,
 )
-fig_wr.update_xaxes(ticks="outside",
+fig_wdx.update_xaxes(ticks="outside",
               ticklabelmode="period",
               tickcolor="white",
               ticklen=10,
@@ -3140,7 +3139,7 @@ fig_wr.update_xaxes(ticks="outside",
               linecolor='white',
               gridcolor='lightpink',
 )
-fig_wr.update_layout(
+fig_wdx.update_layout(
             xaxis_rangeslider_visible=False,
             template='plotly_dark',
             showlegend=True,
@@ -3160,9 +3159,203 @@ fig_wr.update_layout(
                 'size': 18
             },
         )
-fig_wr.write_image('assets/weekly_adx.png', height=800, width=1600)
-fig_wr.update_yaxes(row=2, col=1, range=[0, 100])
-exit()
+fig_wdx.write_image('assets/weekly_adx.png', height=800, width=1600)
+
+monthly_di.append(single_strength_indicators.directional_indicator_known_previous(
+    latest_high,
+    data['High'].iloc[-1],
+    latest_low,
+    data['Low'].iloc[-1],
+    data['Close'].iloc[-1],
+    monthly_di[-1][2],
+    monthly_di[-1][0],
+    monthly_di[-1][1],
+    20
+))
+monthly_dx.append(single_strength_indicators.directional_index(monthly_di[-1][0], monthly_di[-1][1]))
+monthly_adx.append(single_strength_indicators.average_directional_index(monthly_dx[-20:], 'ema'))
+monthly_adxr.append(single_strength_indicators.average_directional_index_rating(monthly_adx[-1], monthly_adx[-20]))
+
+fig_mdx = make_subplots(
+    rows=2,
+    cols=1,
+    specs=[[{"type": "candlestick"}], [{"type": "scatter"}]]
+)
+fig_mdx.add_trace(
+    go.Candlestick(
+        x=data.index,
+        open=data['Open'],
+        low=data['Low'],
+        high=data['High'],
+        close=data['Close'],
+        name='S&P 500'
+    ),
+    row=1, col=1
+)
+fig_mdx.add_trace(
+    go.Scatter(
+        x=data.index[-len(monthly_dx):],
+        y=monthly_dx,
+        name='Monthly DX',
+        line={'color': '#FFE4C4'}
+    ),
+    row=2, col=1,
+)
+fig_mdx.add_trace(
+    go.Scatter(
+        x=data.index[-len(monthly_adx):],
+        y=monthly_adx,
+        name='Monthly ADX',
+        line={'color': '#E9967A'}
+    ),
+    row=2, col=1,
+)
+fig_mdx.add_trace(
+    go.Scatter(
+        x=data.index[-len(monthly_adxr):],
+        y=monthly_adxr,
+        name='Monthly ADX Rating',
+        line={'color': '#FF7F50'}
+    ),
+    row=2, col=1,
+)
+fig_mdx.update_xaxes(ticks="outside",
+              ticklabelmode="period",
+              tickcolor="white",
+              ticklen=10,
+              minor=dict(
+                 ticklen=5,
+                 dtick=7 * 24 * 60 * 60 * 1000,
+                 tick0=data.index[-1],
+                 griddash='dot',
+                 gridcolor='grey'),
+              rangebreaks=[
+                  {'bounds': ['sat', 'mon']},
+                  {'values': ['2022-09-05', '2022-11-24', '2022-12-26', '2023-01-02', '2023-01-16', '2023-02-20', '2023-04-07', '2023-05-29', '2023-06-19', '2023-07-04', '2023-09-04']}
+                          ],
+              showline=True,
+              linecolor='white',
+              gridcolor='lightpink',
+)
+fig_mdx.update_layout(
+            xaxis_rangeslider_visible=False,
+            template='plotly_dark',
+            showlegend=True,
+            margin={
+                'r': 50,
+                't': 100,
+                'b': 50,
+                'l': 50
+            },
+            title_text='Monthly Directional Index',
+            title_font_family="Times New Roman",
+            title_font_color='white',
+            title_font_size=36,
+            font={
+                'family': "Times New Roman",
+                'color': 'white',
+                'size': 18
+            },
+        )
+fig_mdx.write_image('assets/monthly_adx.png', height=800, width=1600)
+
+quarterly_di.append(single_strength_indicators.directional_indicator_known_previous(
+    latest_high,
+    data['High'].iloc[-1],
+    latest_low,
+    data['Low'].iloc[-1],
+    data['Close'].iloc[-1],
+    quarterly_di[-1][2],
+    quarterly_di[-1][0],
+    quarterly_di[-1][1],
+    60
+))
+quarterly_dx.append(single_strength_indicators.directional_index(quarterly_di[-1][0], quarterly_di[-1][1]))
+quarterly_adx.append(single_strength_indicators.average_directional_index(quarterly_dx[-60:], 'ema'))
+quarterly_adxr.append(single_strength_indicators.average_directional_index_rating(quarterly_adx[-1], quarterly_adx[-60]))
+
+fig_qdx = make_subplots(
+    rows=2,
+    cols=1,
+    specs=[[{"type": "candlestick"}], [{"type": "scatter"}]]
+)
+fig_qdx.add_trace(
+    go.Candlestick(
+        x=data.index,
+        open=data['Open'],
+        low=data['Low'],
+        high=data['High'],
+        close=data['Close'],
+        name='S&P 500'
+    ),
+    row=1, col=1
+)
+fig_qdx.add_trace(
+    go.Scatter(
+        x=data.index[-len(quarterly_dx):],
+        y=quarterly_dx,
+        name='Quarterly DX',
+        line={'color': '#FFE4C4'}
+    ),
+    row=2, col=1,
+)
+fig_qdx.add_trace(
+    go.Scatter(
+        x=data.index[-len(quarterly_adx):],
+        y=quarterly_adx,
+        name='Quarterly ADX',
+        line={'color': '#E9967A'}
+    ),
+    row=2, col=1,
+)
+fig_qdx.add_trace(
+    go.Scatter(
+        x=data.index[-len(quarterly_adxr):],
+        y=quarterly_adxr,
+        name='Quarterly ADX Rating',
+        line={'color': '#FF7F50'}
+    ),
+    row=2, col=1,
+)
+fig_qdx.update_xaxes(ticks="outside",
+              ticklabelmode="period",
+              tickcolor="white",
+              ticklen=10,
+              minor=dict(
+                 ticklen=5,
+                 dtick=7 * 24 * 60 * 60 * 1000,
+                 tick0=data.index[-1],
+                 griddash='dot',
+                 gridcolor='grey'),
+              rangebreaks=[
+                  {'bounds': ['sat', 'mon']},
+                  {'values': ['2022-09-05', '2022-11-24', '2022-12-26', '2023-01-02', '2023-01-16', '2023-02-20', '2023-04-07', '2023-05-29', '2023-06-19', '2023-07-04', '2023-09-04']}
+                          ],
+              showline=True,
+              linecolor='white',
+              gridcolor='lightpink',
+)
+fig_qdx.update_layout(
+            xaxis_rangeslider_visible=False,
+            template='plotly_dark',
+            showlegend=True,
+            margin={
+                'r': 50,
+                't': 100,
+                'b': 50,
+                'l': 50
+            },
+            title_text='Quarterly Directional Index',
+            title_font_family="Times New Roman",
+            title_font_color='white',
+            title_font_size=36,
+            font={
+                'family': "Times New Roman",
+                'color': 'white',
+                'size': 18
+            },
+        )
+fig_qdx.write_image('assets/quarterly_adx.png', height=800, width=1600)
 
 # Momentum Indicators
 
@@ -3170,58 +3363,449 @@ exit()
 weekly_roc = bulk_momentum_indicators.rate_of_change(data['Typical Price'].tolist(), 5)
 monthly_roc = bulk_momentum_indicators.rate_of_change(data['Typical Price'].tolist(), 20)
 quarterly_roc = bulk_momentum_indicators.rate_of_change(data['Typical Price'].tolist(), 60)
-
 # print(weekly_roc)
+weekly_roc.append(single_momentum_indicators.rate_of_change(latest_typical_price, data['Typical Price'].iloc[-4]))
+monthly_roc.append(single_momentum_indicators.rate_of_change(latest_typical_price, data['Typical Price'].iloc[-19]))
+quarterly_roc.append(single_momentum_indicators.rate_of_change(latest_typical_price, data['Typical Price'].iloc[-59]))
 
-weekly_roc.append(single_momentum_indicators.rate_of_change(latest_typical_price, data['Typical Price'][-4]))
-monthly_roc.append(single_momentum_indicators.rate_of_change(latest_typical_price, data['Typical Price'][-19]))
-quarterly_roc.append(single_momentum_indicators.rate_of_change(latest_typical_price, data['Typical Price'][-59]))
+fig_roc = make_subplots(
+    rows=2,
+    cols=1,
+    specs=[[{"type": "candlestick"}], [{"type": "scatter"}]]
+)
+fig_roc.add_trace(
+    go.Candlestick(
+        x=data.index,
+        open=data['Open'],
+        low=data['Low'],
+        high=data['High'],
+        close=data['Close'],
+        name='S&P 500'
+    ),
+    row=1, col=1
+)
+fig_roc.add_trace(
+    go.Scatter(
+        x=data.index[-len(weekly_roc):],
+        y=weekly_roc,
+        name='Weekly RoC',
+        line={'color': '#FFE4C4'}
+    ),
+    row=2, col=1,
+)
+fig_roc.add_trace(
+    go.Scatter(
+        x=data.index[-len(monthly_roc):],
+        y=monthly_roc,
+        name='Monhtly RoC',
+        line={'color': '#E9967A'}
+    ),
+    row=2, col=1,
+)
+fig_roc.add_trace(
+    go.Scatter(
+        x=data.index[-len(quarterly_roc):],
+        y=quarterly_roc,
+        name='Quarterly RoC',
+        line={'color': '#FF7F50'}
+    ),
+    row=2, col=1,
+)
+fig_roc.update_xaxes(ticks="outside",
+              ticklabelmode="period",
+              tickcolor="white",
+              ticklen=10,
+              minor=dict(
+                 ticklen=5,
+                 dtick=7 * 24 * 60 * 60 * 1000,
+                 tick0=data.index[-1],
+                 griddash='dot',
+                 gridcolor='grey'),
+              rangebreaks=[
+                  {'bounds': ['sat', 'mon']},
+                  {'values': ['2022-09-05', '2022-11-24', '2022-12-26', '2023-01-02', '2023-01-16', '2023-02-20', '2023-04-07', '2023-05-29', '2023-06-19', '2023-07-04', '2023-09-04']}
+                          ],
+              showline=True,
+              linecolor='white',
+              gridcolor='lightpink',
+)
+fig_roc.update_layout(
+            xaxis_rangeslider_visible=False,
+            template='plotly_dark',
+            showlegend=True,
+            margin={
+                'r': 50,
+                't': 100,
+                'b': 50,
+                'l': 50
+            },
+            title_text='Rate of Change',
+            title_font_family="Times New Roman",
+            title_font_color='white',
+            title_font_size=36,
+            font={
+                'family': "Times New Roman",
+                'color': 'white',
+                'size': 18
+            },
+        )
+fig_roc.write_image('assets/roc.png', height=800, width=1600)
 
 # On Balance Volume
-
 obv = bulk_momentum_indicators.on_balance_volume(data['Close'].tolist(), data['Volume'].tolist())
-
 # print(obv)
+obv.append(single_momentum_indicators.on_balance_volume(latest_close, data['Close'].iloc[-1], latest_volume, data['Volume'].iloc[-1]))
 
-obv.append(single_momentum_indicators.on_balance_volume(latest_close, data['Close'][-1], latest_volume, data['Volume'][-1]))
+fig_obv = make_subplots(
+    rows=3,
+    cols=1,
+    specs=[[{"type": "candlestick"}], [{"type": "bar"}], [{"type": "scatter"}]]
+)
+fig_obv.add_trace(
+    go.Candlestick(
+        x=data.index,
+        open=data['Open'],
+        low=data['Low'],
+        high=data['High'],
+        close=data['Close'],
+        name='S&P 500'
+    ),
+    row=1, col=1
+)
+fig_obv.add_trace(
+    go.Bar(
+        x=data.index,
+        y=data['Volume'],
+        name='Volume'
+    ),
+    row=2, col=1,
+)
+fig_obv.add_trace(
+    go.Scatter(
+        x=data.index[-len(obv):],
+        y=obv,
+        name='OBV',
+    ),
+    row=3, col=1,
+)
+fig_obv.update_xaxes(ticks="outside",
+              ticklabelmode="period",
+              tickcolor="white",
+              ticklen=10,
+              minor=dict(
+                 ticklen=5,
+                 dtick=7 * 24 * 60 * 60 * 1000,
+                 tick0=data.index[-1],
+                 griddash='dot',
+                 gridcolor='grey'),
+              rangebreaks=[
+                  {'bounds': ['sat', 'mon']},
+                  {'values': ['2022-09-05', '2022-11-24', '2022-12-26', '2023-01-02', '2023-01-16', '2023-02-20', '2023-04-07', '2023-05-29', '2023-06-19', '2023-07-04', '2023-09-04']}
+                          ],
+              showline=True,
+              linecolor='white',
+              gridcolor='lightpink',
+)
+fig_obv.update_layout(
+            xaxis_rangeslider_visible=False,
+            template='plotly_dark',
+            showlegend=True,
+            margin={
+                'r': 50,
+                't': 100,
+                'b': 50,
+                'l': 50
+            },
+            title_text='On Balance Volume',
+            title_font_family="Times New Roman",
+            title_font_color='white',
+            title_font_size=36,
+            font={
+                'family': "Times New Roman",
+                'color': 'white',
+                'size': 18
+            },
+        )
+fig_obv.write_image('assets/obv.png', height=800, width=1600)
 
 # Commodity Channel Index
 
 weekly_cci = bulk_momentum_indicators.commodity_channel_index(data['Typical Price'].tolist(), 5, 'ema', 'median')
 monthly_cci = bulk_momentum_indicators.commodity_channel_index(data['Typical Price'].tolist(), 20, 'ema', 'median')
 quarterly_cci = bulk_momentum_indicators.commodity_channel_index(data['Typical Price'].tolist(), 60, 'ema', 'median')
-
 # print(weekly_cci)
+weekly_cci.append(single_momentum_indicators.commodity_channel_index(data['Typical Price'][-4:].tolist() + [latest_typical_price], 'ema', 'median'))
+monthly_cci.append(single_momentum_indicators.commodity_channel_index(data['Typical Price'][-19:].tolist() + [latest_typical_price], 'ema', 'median'))
+quarterly_cci.append(single_momentum_indicators.commodity_channel_index(data['Typical Price'][-59:].tolist() + [latest_typical_price], 'ema', 'median'))
 
-weekly_cci.append(single_momentum_indicators.commodity_channel_index(data['Typical Price'][-4:] + [latest_typical_price], 'ema', 'median'))
-monthly_cci.append(single_momentum_indicators.commodity_channel_index(data['Typical Price'][-19:] + [latest_typical_price], 'ema', 'median'))
-quarterly_cci.append(single_momentum_indicators.commodity_channel_index(data['Typical Price'][-59:] + [latest_typical_price], 'ema', 'median'))
+fig_cci = make_subplots(
+    rows=2,
+    cols=1,
+    specs=[[{"type": "candlestick"}], [{"type": "scatter"}]]
+)
+fig_cci.add_trace(
+    go.Candlestick(
+        x=data.index,
+        open=data['Open'],
+        low=data['Low'],
+        high=data['High'],
+        close=data['Close'],
+        name='S&P 500'
+    ),
+    row=1, col=1
+)
+fig_cci.add_trace(
+    go.Scatter(
+        x=data.index[-len(weekly_cci):],
+        y=weekly_cci,
+        name='Weekly CCI',
+        line={'color': '#FFE4C4'}
+    ),
+    row=2, col=1,
+)
+fig_cci.add_trace(
+    go.Scatter(
+        x=data.index[-len(monthly_cci):],
+        y=monthly_cci,
+        name='Monhtly CCI',
+        line={'color': '#E9967A'}
+    ),
+    row=2, col=1,
+)
+fig_cci.add_trace(
+    go.Scatter(
+        x=data.index[-len(quarterly_cci):],
+        y=quarterly_cci,
+        name='Quarterly CCI',
+        line={'color': '#FF7F50'}
+    ),
+    row=2, col=1,
+)
+fig_cci.update_xaxes(ticks="outside",
+              ticklabelmode="period",
+              tickcolor="white",
+              ticklen=10,
+              minor=dict(
+                 ticklen=5,
+                 dtick=7 * 24 * 60 * 60 * 1000,
+                 tick0=data.index[-1],
+                 griddash='dot',
+                 gridcolor='grey'),
+              rangebreaks=[
+                  {'bounds': ['sat', 'mon']},
+                  {'values': ['2022-09-05', '2022-11-24', '2022-12-26', '2023-01-02', '2023-01-16', '2023-02-20', '2023-04-07', '2023-05-29', '2023-06-19', '2023-07-04', '2023-09-04']}
+                          ],
+              showline=True,
+              linecolor='white',
+              gridcolor='lightpink',
+)
+fig_cci.update_layout(
+            xaxis_rangeslider_visible=False,
+            template='plotly_dark',
+            showlegend=True,
+            margin={
+                'r': 50,
+                't': 100,
+                'b': 50,
+                'l': 50
+            },
+            title_text='Commodity Channel Index',
+            title_font_family="Times New Roman",
+            title_font_color='white',
+            title_font_size=36,
+            font={
+                'family': "Times New Roman",
+                'color': 'white',
+                'size': 18
+            },
+        )
+fig_cci.write_image('assets/cci.png', height=800, width=1600)
 
 # Trend Indicators
-
 # Aroon Oscillator
 
 aroon_up = bulk_trend_indicators.aroon_up(data['High'].tolist())
 aroon_down = bulk_trend_indicators.aroon_down(data['Low'].tolist())
 aroon_oscillator = bulk_trend_indicators.aroon_oscillator(data['High'].tolist(), data['Low'].tolist())
-
 # print(aroon_oscillator)
-
 aroon_up.append(single_trend_indicators.aroon_up(data['High'][-26:].tolist() + [latest_high]))
-aroon_up.append(single_trend_indicators.aroon_down(data['Low'][-26:].tolist() + [latest_low]))
-aroon_up.append(single_trend_indicators.aroon_oscillator(data['High'][-26:].tolist() + [latest_high], data['Low'][-26:].tolist() + [latest_low]))
+aroon_down.append(single_trend_indicators.aroon_down(data['Low'][-26:].tolist() + [latest_low]))
+aroon_oscillator.append(single_trend_indicators.aroon_oscillator(data['High'][-26:].tolist() + [latest_high], data['Low'][-26:].tolist() + [latest_low]))
+
+fig_ar = make_subplots(
+    rows=2,
+    cols=1,
+    specs=[[{"type": "candlestick"}], [{"type": "scatter"}]]
+)
+fig_ar.add_trace(
+    go.Candlestick(
+        x=data.index,
+        open=data['Open'],
+        low=data['Low'],
+        high=data['High'],
+        close=data['Close'],
+        name='S&P 500'
+    ),
+    row=1, col=1
+)
+fig_ar.add_trace(
+    go.Scatter(
+        x=data.index[-len(aroon_up):],
+        y=aroon_up,
+        name='Aroon Up',
+        line={'color': 'green'}
+    ),
+    row=2, col=1,
+)
+fig_ar.add_trace(
+    go.Scatter(
+        x=data.index[-len(aroon_down):],
+        y=aroon_down,
+        name='Aroon Down',
+        line={'color': 'red'}
+    ),
+    row=2, col=1,
+)
+fig_ar.add_trace(
+    go.Scatter(
+        x=data.index[-len(aroon_oscillator):],
+        y=aroon_oscillator,
+        name='Aroon Oscillator',
+        line={'color': 'blue'}
+    ),
+    row=2, col=1,
+)
+fig_ar.update_xaxes(ticks="outside",
+              ticklabelmode="period",
+              tickcolor="white",
+              ticklen=10,
+              minor=dict(
+                 ticklen=5,
+                 dtick=7 * 24 * 60 * 60 * 1000,
+                 tick0=data.index[-1],
+                 griddash='dot',
+                 gridcolor='grey'),
+              rangebreaks=[
+                  {'bounds': ['sat', 'mon']},
+                  {'values': ['2022-09-05', '2022-11-24', '2022-12-26', '2023-01-02', '2023-01-16', '2023-02-20', '2023-04-07', '2023-05-29', '2023-06-19', '2023-07-04', '2023-09-04']}
+                          ],
+              showline=True,
+              linecolor='white',
+              gridcolor='lightpink',
+)
+fig_ar.update_layout(
+            xaxis_rangeslider_visible=False,
+            template='plotly_dark',
+            showlegend=True,
+            margin={
+                'r': 50,
+                't': 100,
+                'b': 50,
+                'l': 50
+            },
+            title_text='Aroon Oscillator',
+            title_font_family="Times New Roman",
+            title_font_color='white',
+            title_font_size=36,
+            font={
+                'family': "Times New Roman",
+                'color': 'white',
+                'size': 18
+            },
+        )
+fig_ar.write_image('assets/aroon_oscillator.png', height=800, width=1600)
 
 # Personalised Aroon Oscillator
-
 weekly_aroon_up = bulk_trend_indicators.aroon_up(data['High'].tolist(), 5)
 weekly_aroon_down = bulk_trend_indicators.aroon_down(data['Low'].tolist(), 5)
 weekly_aroon_oscillator = bulk_trend_indicators.aroon_oscillator(data['High'].tolist(), data['Low'].tolist(), 5)
-
 # print(weekly_aroon_up)
-
 weekly_aroon_up.append(single_trend_indicators.aroon_up(data['High'][-6:].tolist() + [latest_high], 5))
 weekly_aroon_down.append(single_trend_indicators.aroon_down(data['Low'][-6:].tolist() + [latest_low], 5))
 weekly_aroon_oscillator.append(single_trend_indicators.aroon_oscillator(data['High'][-6:].tolist() + [latest_high], data['Low'][-6:].tolist() + [latest_low], 5))
+
+fig_war = make_subplots(
+    rows=2,
+    cols=1,
+    specs=[[{"type": "candlestick"}], [{"type": "scatter"}]]
+)
+fig_war.add_trace(
+    go.Candlestick(
+        x=data.index,
+        open=data['Open'],
+        low=data['Low'],
+        high=data['High'],
+        close=data['Close'],
+        name='S&P 500'
+    ),
+    row=1, col=1
+)
+fig_war.add_trace(
+    go.Scatter(
+        x=data.index[-len(weekly_aroon_up):],
+        y=weekly_aroon_up,
+        name='Aroon Up',
+        line={'color': 'green'}
+    ),
+    row=2, col=1,
+)
+fig_war.add_trace(
+    go.Scatter(
+        x=data.index[-len(weekly_aroon_down):],
+        y=weekly_aroon_down,
+        name='Aroon Down',
+        line={'color': 'red'}
+    ),
+    row=2, col=1,
+)
+fig_war.add_trace(
+    go.Scatter(
+        x=data.index[-len(weekly_aroon_oscillator):],
+        y=weekly_aroon_oscillator,
+        name='Aroon Oscillator',
+        line={'color': 'blue'}
+    ),
+    row=2, col=1,
+)
+fig_war.update_xaxes(ticks="outside",
+              ticklabelmode="period",
+              tickcolor="white",
+              ticklen=10,
+              minor=dict(
+                 ticklen=5,
+                 dtick=7 * 24 * 60 * 60 * 1000,
+                 tick0=data.index[-1],
+                 griddash='dot',
+                 gridcolor='grey'),
+              rangebreaks=[
+                  {'bounds': ['sat', 'mon']},
+                  {'values': ['2022-09-05', '2022-11-24', '2022-12-26', '2023-01-02', '2023-01-16', '2023-02-20', '2023-04-07', '2023-05-29', '2023-06-19', '2023-07-04', '2023-09-04']}
+                          ],
+              showline=True,
+              linecolor='white',
+              gridcolor='lightpink',
+)
+fig_war.update_layout(
+            xaxis_rangeslider_visible=False,
+            template='plotly_dark',
+            showlegend=True,
+            margin={
+                'r': 50,
+                't': 100,
+                'b': 50,
+                'l': 50
+            },
+            title_text='Weekly Aroon Oscillator',
+            title_font_family="Times New Roman",
+            title_font_color='white',
+            title_font_size=36,
+            font={
+                'family': "Times New Roman",
+                'color': 'white',
+                'size': 18
+            },
+        )
+fig_war.write_image('assets/weekly_aroon_oscillator.png', height=800, width=1600)
 
 monthly_aroon_up = bulk_trend_indicators.aroon_up(data['High'].tolist(), 20)
 monthly_aroon_down = bulk_trend_indicators.aroon_down(data['Low'].tolist(), 20)
@@ -3231,6 +3815,89 @@ monthly_aroon_up.append(single_trend_indicators.aroon_up(data['High'][-21:].toli
 monthly_aroon_down.append(single_trend_indicators.aroon_down(data['Low'][-21:].tolist() + [latest_low], 20))
 monthly_aroon_oscillator.append(single_trend_indicators.aroon_oscillator(data['High'][-21:].tolist() + [latest_high], data['Low'][-21:].tolist() + [latest_low], 20))
 
+fig_mar = make_subplots(
+    rows=2,
+    cols=1,
+    specs=[[{"type": "candlestick"}], [{"type": "scatter"}]]
+)
+fig_mar.add_trace(
+    go.Candlestick(
+        x=data.index,
+        open=data['Open'],
+        low=data['Low'],
+        high=data['High'],
+        close=data['Close'],
+        name='S&P 500'
+    ),
+    row=1, col=1
+)
+fig_mar.add_trace(
+    go.Scatter(
+        x=data.index[-len(monthly_aroon_up):],
+        y=monthly_aroon_up,
+        name='Aroon Up',
+        line={'color': 'green'}
+    ),
+    row=2, col=1,
+)
+fig_mar.add_trace(
+    go.Scatter(
+        x=data.index[-len(monthly_aroon_down):],
+        y=monthly_aroon_down,
+        name='Aroon Down',
+        line={'color': 'red'}
+    ),
+    row=2, col=1,
+)
+fig_mar.add_trace(
+    go.Scatter(
+        x=data.index[-len(monthly_aroon_oscillator):],
+        y=monthly_aroon_oscillator,
+        name='Aroon Oscillator',
+        line={'color': 'blue'}
+    ),
+    row=2, col=1,
+)
+fig_mar.update_xaxes(ticks="outside",
+              ticklabelmode="period",
+              tickcolor="white",
+              ticklen=10,
+              minor=dict(
+                 ticklen=5,
+                 dtick=7 * 24 * 60 * 60 * 1000,
+                 tick0=data.index[-1],
+                 griddash='dot',
+                 gridcolor='grey'),
+              rangebreaks=[
+                  {'bounds': ['sat', 'mon']},
+                  {'values': ['2022-09-05', '2022-11-24', '2022-12-26', '2023-01-02', '2023-01-16', '2023-02-20', '2023-04-07', '2023-05-29', '2023-06-19', '2023-07-04', '2023-09-04']}
+                          ],
+              showline=True,
+              linecolor='white',
+              gridcolor='lightpink',
+)
+fig_mar.update_layout(
+            xaxis_rangeslider_visible=False,
+            template='plotly_dark',
+            showlegend=True,
+            margin={
+                'r': 50,
+                't': 100,
+                'b': 50,
+                'l': 50
+            },
+            title_text='Monthly Aroon Oscillator',
+            title_font_family="Times New Roman",
+            title_font_color='white',
+            title_font_size=36,
+            font={
+                'family': "Times New Roman",
+                'color': 'white',
+                'size': 18
+            },
+        )
+fig_mar.write_image('assets/monthly_aroon_oscillator.png', height=800, width=1600)
+
 quarterly_aroon_up = bulk_trend_indicators.aroon_up(data['High'].tolist(), 60)
 quarterly_aroon_down = bulk_trend_indicators.aroon_down(data['Low'].tolist(), 60)
 quarterly_aroon_oscillator = bulk_trend_indicators.aroon_oscillator(data['High'].tolist(), data['Low'].tolist(), 60)
@@ -3239,13 +3906,94 @@ quarterly_aroon_up.append(single_trend_indicators.aroon_up(data['High'][-61:].to
 quarterly_aroon_down.append(single_trend_indicators.aroon_down(data['Low'][-61:].tolist() + [latest_low], 60))
 quarterly_aroon_oscillator.append(single_trend_indicators.aroon_oscillator(data['High'][-61:].tolist() + [latest_high], data['Low'][-61:].tolist() + [latest_low], 60))
 
+fig_qar = make_subplots(
+    rows=2,
+    cols=1,
+    specs=[[{"type": "candlestick"}], [{"type": "scatter"}]]
+)
+fig_qar.add_trace(
+    go.Candlestick(
+        x=data.index,
+        open=data['Open'],
+        low=data['Low'],
+        high=data['High'],
+        close=data['Close'],
+        name='S&P 500'
+    ),
+    row=1, col=1
+)
+fig_qar.add_trace(
+    go.Scatter(
+        x=data.index[-len(quarterly_aroon_up):],
+        y=quarterly_aroon_up,
+        name='Aroon Up',
+        line={'color': 'green'}
+    ),
+    row=2, col=1,
+)
+fig_qar.add_trace(
+    go.Scatter(
+        x=data.index[-len(quarterly_aroon_down):],
+        y=quarterly_aroon_down,
+        name='Aroon Down',
+        line={'color': 'red'}
+    ),
+    row=2, col=1,
+)
+fig_qar.add_trace(
+    go.Scatter(
+        x=data.index[-len(quarterly_aroon_oscillator):],
+        y=quarterly_aroon_oscillator,
+        name='Aroon Oscillator',
+        line={'color': 'blue'}
+    ),
+    row=2, col=1,
+)
+fig_qar.update_xaxes(ticks="outside",
+              ticklabelmode="period",
+              tickcolor="white",
+              ticklen=10,
+              minor=dict(
+                 ticklen=5,
+                 dtick=7 * 24 * 60 * 60 * 1000,
+                 tick0=data.index[-1],
+                 griddash='dot',
+                 gridcolor='grey'),
+              rangebreaks=[
+                  {'bounds': ['sat', 'mon']},
+                  {'values': ['2022-09-05', '2022-11-24', '2022-12-26', '2023-01-02', '2023-01-16', '2023-02-20', '2023-04-07', '2023-05-29', '2023-06-19', '2023-07-04', '2023-09-04']}
+                          ],
+              showline=True,
+              linecolor='white',
+              gridcolor='lightpink',
+)
+fig_qar.update_layout(
+            xaxis_rangeslider_visible=False,
+            template='plotly_dark',
+            showlegend=True,
+            margin={
+                'r': 50,
+                't': 100,
+                'b': 50,
+                'l': 50
+            },
+            title_text='Quarterly Aroon Oscillator',
+            title_font_family="Times New Roman",
+            title_font_color='white',
+            title_font_size=36,
+            font={
+                'family': "Times New Roman",
+                'color': 'white',
+                'size': 18
+            },
+        )
+fig_qar.write_image('assets/quarterly_aroon_oscillator.png', height=800, width=1600)
+
 # Parabolic Stop and Reverse
 
 weekly_parabolic_sar = bulk_trend_indicators.parabolic_sar(data['High'].tolist(), data['Low'].tolist(), data['Close'].tolist(), 5)
 monthly_parabolic_sar = bulk_trend_indicators.parabolic_sar(data['High'].tolist(), data['Low'].tolist(), data['Close'].tolist(), 20)
 quarterly_parabolic_sar = bulk_trend_indicators.parabolic_sar(data['High'].tolist(), data['Low'].tolist(), data['Close'].tolist(), 60)
-
-# print(weekly_parabolic_sar)
 
 weekly_parabolic_sar.append(single_trend_indicators.parabolic_sar(
     data['High'][-4:].tolist() + [latest_high],
@@ -3275,51 +4023,591 @@ quarterly_parabolic_sar.append(single_trend_indicators.parabolic_sar(
     quarterly_parabolic_sar[-1][3],
 ))
 
+weekly_psar_points = [i[0] for i in weekly_parabolic_sar]
+monthly_psar_points = [i[0] for i in monthly_parabolic_sar]
+quarterly_psar_points = [i[0] for i in quarterly_parabolic_sar]
+
+fig_psar = make_subplots(
+    rows=1,
+    cols=1,
+    specs=[[{"type": "candlestick"}]]
+)
+fig_psar.add_trace(
+    go.Candlestick(
+        x=data.index,
+        open=data['Open'],
+        low=data['Low'],
+        high=data['High'],
+        close=data['Close'],
+        name='S&P 500'
+    ),
+    row=1, col=1
+)
+fig_psar.add_trace(
+    go.Scatter(
+        x=data.index[-len(weekly_psar_points):],
+        y=weekly_psar_points,
+        name='Weekly Parabolic SaR',
+        line={'color': '#FFE4C4'},
+        mode='markers'
+    ),
+    row=1, col=1,
+)
+fig_psar.add_trace(
+    go.Scatter(
+        x=data.index[-len(monthly_psar_points):],
+        y=monthly_psar_points,
+        name='Monhtly Parabolic SaR',
+        line={'color': '#E9967A'},
+        mode='markers'
+    ),
+    row=1, col=1,
+)
+fig_psar.add_trace(
+    go.Scatter(
+        x=data.index[-len(quarterly_psar_points):],
+        y=quarterly_psar_points,
+        name='Quarterly Parabolic SaR',
+        line={'color': '#FF7F50'},
+        mode='markers'
+    ),
+    row=1, col=1,
+)
+fig_psar.update_xaxes(ticks="outside",
+              ticklabelmode="period",
+              tickcolor="white",
+              ticklen=10,
+              minor=dict(
+                 ticklen=5,
+                 dtick=7 * 24 * 60 * 60 * 1000,
+                 tick0=data.index[-1],
+                 griddash='dot',
+                 gridcolor='grey'),
+              rangebreaks=[
+                  {'bounds': ['sat', 'mon']},
+                  {'values': ['2022-09-05', '2022-11-24', '2022-12-26', '2023-01-02', '2023-01-16', '2023-02-20', '2023-04-07', '2023-05-29', '2023-06-19', '2023-07-04', '2023-09-04']}
+                          ],
+              showline=True,
+              linecolor='white',
+              gridcolor='lightpink',
+)
+fig_psar.update_layout(
+            xaxis_rangeslider_visible=False,
+            template='plotly_dark',
+            showlegend=True,
+            margin={
+                'r': 50,
+                't': 100,
+                'b': 50,
+                'l': 50
+            },
+            title_text='Parabolic Stop and Reverse',
+            title_font_family="Times New Roman",
+            title_font_color='white',
+            title_font_size=36,
+            font={
+                'family': "Times New Roman",
+                'color': 'white',
+                'size': 18
+            },
+        )
+fig_psar.write_image('assets/psar.png', height=800, width=1600)
+
 # Candle Indicators
-
 # Bollinger Bands
-
 bollinger_bands = bulk_candle_indicators.bollinger_bands(data['Typical Price'].tolist())
-
 # print(bollinger_bands)
-
 bollinger_bands.append(single_candle_indicators.bollinger_bands(data['Typical Price'][-19:].tolist() + [latest_typical_price]))
+
+lower_band = [i[0] for i in bollinger_bands]
+upper_band = [i[1] for i in bollinger_bands]
+# moving_average = [i[2] for i in bolinger_bands]
+fig_bband = make_subplots(
+    rows=1,
+    cols=1,
+    specs=[[{"type": "candlestick"}]]
+)
+fig_bband.add_trace(
+    go.Candlestick(
+        x=data.index,
+        open=data['Open'],
+        low=data['Low'],
+        high=data['High'],
+        close=data['Close'],
+        name='S&P 500'
+    ),
+    row=1, col=1
+)
+fig_bband.add_trace(
+    go.Scatter(
+        x=data.index[-len(lower_band):],
+        y=lower_band,
+        name='Lower Band',
+        line={'color': 'green'}
+    ),
+    row=1, col=1,
+)
+fig_bband.add_trace(
+    go.Scatter(
+        x=data.index[-len(upper_band):],
+        y=upper_band,
+        name='Upper Band',
+        line={'color': 'red'}
+    ),
+    row=1, col=1,
+)
+# fig_bband.add_trace(
+#     go.Scatter(
+#         x=data.index[-len(quarterly_psar_points):],
+#         y=quarterly_psar_points,
+#         name='Quarterly Parabolic SaR',
+#         line={'color': '#FF7F50'},
+#         mode='markers'
+#     ),
+#     row=1, col=1,
+# )
+fig_bband.update_xaxes(ticks="outside",
+              ticklabelmode="period",
+              tickcolor="white",
+              ticklen=10,
+              minor=dict(
+                 ticklen=5,
+                 dtick=7 * 24 * 60 * 60 * 1000,
+                 tick0=data.index[-1],
+                 griddash='dot',
+                 gridcolor='grey'),
+              rangebreaks=[
+                  {'bounds': ['sat', 'mon']},
+                  {'values': ['2022-09-05', '2022-11-24', '2022-12-26', '2023-01-02', '2023-01-16', '2023-02-20', '2023-04-07', '2023-05-29', '2023-06-19', '2023-07-04', '2023-09-04']}
+                          ],
+              showline=True,
+              linecolor='white',
+              gridcolor='lightpink',
+)
+fig_bband.update_layout(
+            xaxis_rangeslider_visible=False,
+            template='plotly_dark',
+            showlegend=True,
+            margin={
+                'r': 50,
+                't': 100,
+                'b': 50,
+                'l': 50
+            },
+            title_text='Bollinger Bands',
+            title_font_family="Times New Roman",
+            title_font_color='white',
+            title_font_size=36,
+            font={
+                'family': "Times New Roman",
+                'color': 'white',
+                'size': 18
+            },
+        )
+fig_bband.write_image('assets/bband.png', height=800, width=1600)
 
 # Personalised Bollinger Bands
 
-weekly_bband = bulk_candle_indicators.bollinger_bands(data['Typical Price'].tolist(), 5, 'ema', 3)
-monthly_bband = bulk_candle_indicators.bollinger_bands(data['Typical Price'].tolist(), 20, 'ema', 3)
-quarterly_bband = bulk_candle_indicators.bollinger_bands(data['Typical Price'].tolist(), 60, 'ema', 3)
+weekly_bband = bulk_candle_indicators.bollinger_bands(data['Typical Price'].tolist(), 5, 'ema', 2)
+monthly_bband = bulk_candle_indicators.bollinger_bands(data['Typical Price'].tolist(), 20, 'ema', 2)
+quarterly_bband = bulk_candle_indicators.bollinger_bands(data['Typical Price'].tolist(), 60, 'ema', 2)
 
 # print(weekly_bband)
 
 weekly_bband.append(single_candle_indicators.bollinger_bands(
     data['Typical Price'][-4:].tolist() + [latest_typical_price],
     'ema',
-    3
+    2
 ))
+
+weekly_lower_band = [i[0] for i in weekly_bband]
+weekly_upper_band = [i[1] for i in weekly_bband]
+# moving_average = [i[2] for i in bolinger_bands]
+fig_wbband = make_subplots(
+    rows=1,
+    cols=1,
+    specs=[[{"type": "candlestick"}]]
+)
+fig_wbband.add_trace(
+    go.Candlestick(
+        x=data.index,
+        open=data['Open'],
+        low=data['Low'],
+        high=data['High'],
+        close=data['Close'],
+        name='S&P 500'
+    ),
+    row=1, col=1
+)
+fig_wbband.add_trace(
+    go.Scatter(
+        x=data.index[-len(weekly_lower_band):],
+        y=weekly_lower_band,
+        name='Lower Band',
+        line={'color': 'green'}
+    ),
+    row=1, col=1,
+)
+fig_wbband.add_trace(
+    go.Scatter(
+        x=data.index[-len(weekly_upper_band):],
+        y=weekly_upper_band,
+        name='Upper Band',
+        line={'color': 'red'}
+    ),
+    row=1, col=1,
+)
+# fig_bband.add_trace(
+#     go.Scatter(
+#         x=data.index[-len(quarterly_psar_points):],
+#         y=quarterly_psar_points,
+#         name='Quarterly Parabolic SaR',
+#         line={'color': '#FF7F50'},
+#         mode='markers'
+#     ),
+#     row=1, col=1,
+# )
+fig_wbband.update_xaxes(ticks="outside",
+              ticklabelmode="period",
+              tickcolor="white",
+              ticklen=10,
+              minor=dict(
+                 ticklen=5,
+                 dtick=7 * 24 * 60 * 60 * 1000,
+                 tick0=data.index[-1],
+                 griddash='dot',
+                 gridcolor='grey'),
+              rangebreaks=[
+                  {'bounds': ['sat', 'mon']},
+                  {'values': ['2022-09-05', '2022-11-24', '2022-12-26', '2023-01-02', '2023-01-16', '2023-02-20', '2023-04-07', '2023-05-29', '2023-06-19', '2023-07-04', '2023-09-04']}
+                          ],
+              showline=True,
+              linecolor='white',
+              gridcolor='lightpink',
+)
+fig_wbband.update_layout(
+            xaxis_rangeslider_visible=False,
+            template='plotly_dark',
+            showlegend=True,
+            margin={
+                'r': 50,
+                't': 100,
+                'b': 50,
+                'l': 50
+            },
+            title_text='Weekly Bollinger Bands',
+            title_font_family="Times New Roman",
+            title_font_color='white',
+            title_font_size=36,
+            font={
+                'family': "Times New Roman",
+                'color': 'white',
+                'size': 18
+            },
+        )
+fig_wbband.write_image('assets/weekly_bband.png', height=800, width=1600)
+
 monthly_bband.append(single_candle_indicators.bollinger_bands(
     data['Typical Price'][-19:].tolist() + [latest_typical_price],
     'ema',
-    3
+    2
 ))
+
+monthly_lower_band = [i[0] for i in monthly_bband]
+monthly_upper_band = [i[1] for i in monthly_bband]
+# moving_average = [i[2] for i in monthly_bband]
+fig_mbband = make_subplots(
+    rows=1,
+    cols=1,
+    specs=[[{"type": "candlestick"}]]
+)
+fig_mbband.add_trace(
+    go.Candlestick(
+        x=data.index,
+        open=data['Open'],
+        low=data['Low'],
+        high=data['High'],
+        close=data['Close'],
+        name='S&P 500'
+    ),
+    row=1, col=1
+)
+fig_mbband.add_trace(
+    go.Scatter(
+        x=data.index[-len(monthly_lower_band):],
+        y=monthly_lower_band,
+        name='Lower Band',
+        line={'color': 'green'}
+    ),
+    row=1, col=1,
+)
+fig_mbband.add_trace(
+    go.Scatter(
+        x=data.index[-len(monthly_upper_band):],
+        y=monthly_upper_band,
+        name='Upper Band',
+        line={'color': 'red'}
+    ),
+    row=1, col=1,
+)
+# fig_bband.add_trace(
+#     go.Scatter(
+#         x=data.index[-len(quarterly_psar_points):],
+#         y=quarterly_psar_points,
+#         name='Quarterly Parabolic SaR',
+#         line={'color': '#FF7F50'},
+#         mode='markers'
+#     ),
+#     row=1, col=1,
+# )
+fig_mbband.update_xaxes(ticks="outside",
+              ticklabelmode="period",
+              tickcolor="white",
+              ticklen=10,
+              minor=dict(
+                 ticklen=5,
+                 dtick=7 * 24 * 60 * 60 * 1000,
+                 tick0=data.index[-1],
+                 griddash='dot',
+                 gridcolor='grey'),
+              rangebreaks=[
+                  {'bounds': ['sat', 'mon']},
+                  {'values': ['2022-09-05', '2022-11-24', '2022-12-26', '2023-01-02', '2023-01-16', '2023-02-20', '2023-04-07', '2023-05-29', '2023-06-19', '2023-07-04', '2023-09-04']}
+                          ],
+              showline=True,
+              linecolor='white',
+              gridcolor='lightpink',
+)
+fig_mbband.update_layout(
+            xaxis_rangeslider_visible=False,
+            template='plotly_dark',
+            showlegend=True,
+            margin={
+                'r': 50,
+                't': 100,
+                'b': 50,
+                'l': 50
+            },
+            title_text='Monthly Bollinger Bands',
+            title_font_family="Times New Roman",
+            title_font_color='white',
+            title_font_size=36,
+            font={
+                'family': "Times New Roman",
+                'color': 'white',
+                'size': 18
+            },
+        )
+fig_mbband.write_image('assets/monthly_bband.png', height=800, width=1600)
+
 quarterly_bband.append(single_candle_indicators.bollinger_bands(
     data['Typical Price'][-59:].tolist() + [latest_typical_price],
     'ema',
-    3
+    2
 ))
 
+quarterly_lower_band = [i[0] for i in quarterly_bband]
+quarterly_upper_band = [i[1] for i in quarterly_bband]
+# moving_average = [i[2] for i in quarterly_bband]
+fig_mbband = make_subplots(
+    rows=1,
+    cols=1,
+    specs=[[{"type": "candlestick"}]]
+)
+fig_mbband.add_trace(
+    go.Candlestick(
+        x=data.index,
+        open=data['Open'],
+        low=data['Low'],
+        high=data['High'],
+        close=data['Close'],
+        name='S&P 500'
+    ),
+    row=1, col=1
+)
+fig_mbband.add_trace(
+    go.Scatter(
+        x=data.index[-len(quarterly_lower_band):],
+        y=quarterly_lower_band,
+        name='Lower Band',
+        line={'color': 'green'}
+    ),
+    row=1, col=1,
+)
+fig_mbband.add_trace(
+    go.Scatter(
+        x=data.index[-len(quarterly_upper_band):],
+        y=quarterly_upper_band,
+        name='Upper Band',
+        line={'color': 'red'}
+    ),
+    row=1, col=1,
+)
+# fig_bband.add_trace(
+#     go.Scatter(
+#         x=data.index[-len(quarterly_psar_points):],
+#         y=quarterly_psar_points,
+#         name='Quarterly Parabolic SaR',
+#         line={'color': '#FF7F50'},
+#         mode='markers'
+#     ),
+#     row=1, col=1,
+# )
+fig_mbband.update_xaxes(ticks="outside",
+              ticklabelmode="period",
+              tickcolor="white",
+              ticklen=10,
+              minor=dict(
+                 ticklen=5,
+                 dtick=7 * 24 * 60 * 60 * 1000,
+                 tick0=data.index[-1],
+                 griddash='dot',
+                 gridcolor='grey'),
+              rangebreaks=[
+                  {'bounds': ['sat', 'mon']},
+                  {'values': ['2022-09-05', '2022-11-24', '2022-12-26', '2023-01-02', '2023-01-16', '2023-02-20', '2023-04-07', '2023-05-29', '2023-06-19', '2023-07-04', '2023-09-04']}
+                          ],
+              showline=True,
+              linecolor='white',
+              gridcolor='lightpink',
+)
+fig_mbband.update_layout(
+            xaxis_rangeslider_visible=False,
+            template='plotly_dark',
+            showlegend=True,
+            margin={
+                'r': 50,
+                't': 100,
+                'b': 50,
+                'l': 50
+            },
+            title_text='Quarterly Bollinger Bands',
+            title_font_family="Times New Roman",
+            title_font_color='white',
+            title_font_size=36,
+            font={
+                'family': "Times New Roman",
+                'color': 'white',
+                'size': 18
+            },
+        )
+fig_mbband.write_image('assets/quarterly_bband.png', height=800, width=1600)
+
 # Ichimoku Cloud
-
 ichimoku_cloud = bulk_candle_indicators.ichimoku_cloud(data['High'].tolist(), data['Low'].tolist(), data['Close'].tolist())
-
 # print(ichimoku_cloud)
-
 ichimoku_cloud.append(single_candle_indicators.ichimoku_cloud(
     data['High'][-59:].tolist() + [latest_high],
     data['Low'][-59:].tolist() + [latest_low],
     data['Close'][-59:].tolist() + [latest_close]
 ))
+
+icloud_span_a = [i[0] for i in ichimoku_cloud]
+icloud_span_b = [i[1] for i in ichimoku_cloud]
+icloud_base_line = [i[2] for i in ichimoku_cloud]
+icloud_conversion_line = [i[3] for i in ichimoku_cloud]
+icloud_lagged_price = [i[4] for i in ichimoku_cloud]
+
+fig_icloud = make_subplots(
+    rows=1,
+    cols=1,
+    specs=[[{"type": "candlestick"}]]
+)
+fig_icloud.add_trace(
+    go.Candlestick(
+        x=data.index,
+        open=data['Open'],
+        low=data['Low'],
+        high=data['High'],
+        close=data['Close'],
+        name='S&P 500'
+    ),
+    row=1, col=1
+)
+fig_icloud.add_trace(
+    go.Scatter(
+        x=data.index[-len(icloud_span_a):],
+        y=icloud_span_a,
+        name='Span A',
+        line={'color': 'green'}
+    ),
+    row=1, col=1,
+)
+fig_icloud.add_trace(
+    go.Scatter(
+        x=data.index[-len(icloud_span_b):],
+        y=icloud_span_b,
+        name='Span B',
+        line={'color': 'red'}
+    ),
+    row=1, col=1,
+)
+fig_icloud.add_trace(
+    go.Scatter(
+        x=data.index[-len(icloud_base_line):],
+        y=icloud_base_line,
+        name='Base Line',
+        line={'color': 'lightgreen'}
+    ),
+    row=1, col=1,
+)
+fig_icloud.add_trace(
+    go.Scatter(
+        x=data.index[-len(icloud_conversion_line):],
+        y=icloud_conversion_line,
+        name='Conversion Line',
+        line={'color': 'lightsalmon'}
+    ),
+    row=1, col=1,
+)
+fig_icloud.add_trace(
+    go.Scatter(
+        x=data.index[-len(icloud_lagged_price):],
+        y=icloud_lagged_price,
+        name='Lagged Price',
+        line={'color': 'blue'}
+    ),
+    row=1, col=1,
+)
+fig_icloud.update_xaxes(ticks="outside",
+              ticklabelmode="period",
+              tickcolor="white",
+              ticklen=10,
+              minor=dict(
+                 ticklen=5,
+                 dtick=7 * 24 * 60 * 60 * 1000,
+                 tick0=data.index[-1],
+                 griddash='dot',
+                 gridcolor='grey'),
+              rangebreaks=[
+                  {'bounds': ['sat', 'mon']},
+                  {'values': ['2022-09-05', '2022-11-24', '2022-12-26', '2023-01-02', '2023-01-16', '2023-02-20', '2023-04-07', '2023-05-29', '2023-06-19', '2023-07-04', '2023-09-04']}
+                          ],
+              showline=True,
+              linecolor='white',
+              gridcolor='lightpink',
+)
+fig_icloud.update_layout(
+            xaxis_rangeslider_visible=False,
+            template='plotly_dark',
+            showlegend=True,
+            margin={
+                'r': 50,
+                't': 100,
+                'b': 50,
+                'l': 50
+            },
+            title_text='Ichimoku Cloud',
+            title_font_family="Times New Roman",
+            title_font_color='white',
+            title_font_size=36,
+            font={
+                'family': "Times New Roman",
+                'color': 'white',
+                'size': 18
+            },
+        )
+fig_icloud.write_image('assets/icloud.png', height=800, width=1600)
 
 # Personalised Ichimoku Cloud
 
@@ -3328,16 +4616,122 @@ personalised_ichimoku_cloud = bulk_candle_indicators.ichimoku_cloud(data['High']
 # print(personalised_ichimoku_cloud)
 
 personalised_ichimoku_cloud.append(single_candle_indicators.ichimoku_cloud(
-    data['High'][-60:].tolist()  + [latest_high],
+    data['High'][-60:].tolist() + [latest_high],
     data['Low'][-60:].tolist() + [latest_low],
     data['Close'][-60:].tolist() + [latest_close],
     5, 20, 60
 ))
 
+picloud_span_a = [i[0] for i in personalised_ichimoku_cloud]
+picloud_span_b = [i[1] for i in personalised_ichimoku_cloud]
+picloud_base_line = [i[2] for i in personalised_ichimoku_cloud]
+picloud_conversion_line = [i[3] for i in personalised_ichimoku_cloud]
+picloud_lagged_price = [i[4] for i in personalised_ichimoku_cloud]
+
+fig_picloud = make_subplots(
+    rows=1,
+    cols=1,
+    specs=[[{"type": "candlestick"}]]
+)
+fig_picloud.add_trace(
+    go.Candlestick(
+        x=data.index,
+        open=data['Open'],
+        low=data['Low'],
+        high=data['High'],
+        close=data['Close'],
+        name='S&P 500'
+    ),
+    row=1, col=1
+)
+fig_picloud.add_trace(
+    go.Scatter(
+        x=data.index[-len(picloud_span_a):],
+        y=picloud_span_a,
+        name='Span A',
+        line={'color': 'green'}
+    ),
+    row=1, col=1,
+)
+fig_picloud.add_trace(
+    go.Scatter(
+        x=data.index[-len(picloud_span_b):],
+        y=picloud_span_b,
+        name='Span B',
+        line={'color': 'red'}
+    ),
+    row=1, col=1,
+)
+fig_picloud.add_trace(
+    go.Scatter(
+        x=data.index[-len(picloud_base_line):],
+        y=picloud_base_line,
+        name='Base Line',
+        line={'color': 'lightgreen'}
+    ),
+    row=1, col=1,
+)
+fig_picloud.add_trace(
+    go.Scatter(
+        x=data.index[-len(picloud_conversion_line):],
+        y=picloud_conversion_line,
+        name='Conversion Line',
+        line={'color': 'lightsalmon'}
+    ),
+    row=1, col=1,
+)
+fig_picloud.add_trace(
+    go.Scatter(
+        x=data.index[-len(picloud_lagged_price):],
+        y=picloud_lagged_price,
+        name='Lagged Price',
+        line={'color': 'blue'}
+    ),
+    row=1, col=1,
+)
+fig_picloud.update_xaxes(ticks="outside",
+              ticklabelmode="period",
+              tickcolor="white",
+              ticklen=10,
+              minor=dict(
+                 ticklen=5,
+                 dtick=7 * 24 * 60 * 60 * 1000,
+                 tick0=data.index[-1],
+                 griddash='dot',
+                 gridcolor='grey'),
+              rangebreaks=[
+                  {'bounds': ['sat', 'mon']},
+                  {'values': ['2022-09-05', '2022-11-24', '2022-12-26', '2023-01-02', '2023-01-16', '2023-02-20', '2023-04-07', '2023-05-29', '2023-06-19', '2023-07-04', '2023-09-04']}
+                          ],
+              showline=True,
+              linecolor='white',
+              gridcolor='lightpink',
+)
+fig_picloud.update_layout(
+            xaxis_rangeslider_visible=False,
+            template='plotly_dark',
+            showlegend=True,
+            margin={
+                'r': 50,
+                't': 100,
+                'b': 50,
+                'l': 50
+            },
+            title_text='Personalised Ichimoku Cloud',
+            title_font_family="Times New Roman",
+            title_font_color='white',
+            title_font_size=36,
+            font={
+                'family': "Times New Roman",
+                'color': 'white',
+                'size': 18
+            },
+        )
+fig_picloud.write_image('assets/picloud.png', height=800, width=1600)
+
+
 # Volatility
-
 # Average True Range
-
 # TODO: the close price needs to be shifted one as it should be t-1 close
 weekly_atr = bulk_volatility_indicators.average_true_range(
     data['High'].tolist(),
@@ -3357,27 +4751,187 @@ quarterly_atr = bulk_volatility_indicators.average_true_range(
     data['Close'].tolist(),
     60
 )
-
 # print(weekly_atr)
+weekly_atr.append(single_volatility_indicators.average_true_range(latest_high, latest_low, data['Close'].iloc[-1], weekly_atr[-1], 5))
+monthly_atr.append(single_volatility_indicators.average_true_range(latest_high, latest_low, data['Close'].iloc[-1], weekly_atr[-1], 20))
+quarterly_atr.append(single_volatility_indicators.average_true_range(latest_high, latest_low, data['Close'].iloc[-1], weekly_atr[-1], 60))
 
-weekly_atr.append(single_volatility_indicators.average_true_range(latest_high, latest_low, data['Close'][-1], weekly_atr[-1], 5))
-monthly_atr.append(single_volatility_indicators.average_true_range(latest_high, latest_low, data['Close'][-1], weekly_atr[-1], 20))
-quarterly_atr.append(single_volatility_indicators.average_true_range(latest_high, latest_low, data['Close'][-1], weekly_atr[-1], 60))
+fig_atr = make_subplots(
+    rows=2,
+    cols=1,
+    specs=[[{"type": "candlestick"}], [{"type": "scatter"}]]
+)
+fig_atr.add_trace(
+    go.Candlestick(
+        x=data.index,
+        open=data['Open'],
+        low=data['Low'],
+        high=data['High'],
+        close=data['Close'],
+        name='S&P 500'
+    ),
+    row=1, col=1
+)
+fig_atr.add_trace(
+    go.Scatter(
+        x=data.index[-len(weekly_atr):],
+        y=weekly_atr,
+        name='Weekly ATR',
+        line={'color': '#FFE4C4'}
+    ),
+    row=2, col=1,
+)
+fig_atr.add_trace(
+    go.Scatter(
+        x=data.index[-len(monthly_atr):],
+        y=monthly_atr,
+        name='Monthly ATR',
+        line={'color': '#E9967A'}
+    ),
+    row=2, col=1,
+)
+fig_atr.add_trace(
+    go.Scatter(
+        x=data.index[-len(quarterly_atr):],
+        y=quarterly_atr,
+        name='Quarterly ATR',
+        line={'color': '#FF7F50'}
+    ),
+    row=2, col=1,
+)
+fig_atr.update_xaxes(ticks="outside",
+              ticklabelmode="period",
+              tickcolor="white",
+              ticklen=10,
+              minor=dict(
+                 ticklen=5,
+                 dtick=7 * 24 * 60 * 60 * 1000,
+                 tick0=data.index[-1],
+                 griddash='dot',
+                 gridcolor='grey'),
+              rangebreaks=[
+                  {'bounds': ['sat', 'mon']},
+                  {'values': ['2022-09-05', '2022-11-24', '2022-12-26', '2023-01-02', '2023-01-16', '2023-02-20', '2023-04-07', '2023-05-29', '2023-06-19', '2023-07-04', '2023-09-04']}
+                          ],
+              showline=True,
+              linecolor='white',
+              gridcolor='lightpink',
+)
+fig_atr.update_layout(
+            xaxis_rangeslider_visible=False,
+            template='plotly_dark',
+            showlegend=True,
+            margin={
+                'r': 50,
+                't': 100,
+                'b': 50,
+                'l': 50
+            },
+            title_text='Average True Range',
+            title_font_family="Times New Roman",
+            title_font_color='white',
+            title_font_size=36,
+            font={
+                'family': "Times New Roman",
+                'color': 'white',
+                'size': 18
+            },
+        )
+fig_atr.write_image('assets/atr.png', height=800, width=1600)
 
 # Ulcer Index
-
 weekly_ui = bulk_volatility_indicators.ulcer_index(data['Close'].tolist(), 5)
 monthly_ui = bulk_volatility_indicators.ulcer_index(data['Close'].tolist(), 20)
 quarterly_ui = bulk_volatility_indicators.ulcer_index(data['Close'].tolist(), 60)
-
 #print(weekly_ui)
-
 weekly_ui.append(data['Close'][-4:].tolist() + [latest_close])
 monthly_ui.append(data['Close'][-19:].tolist() + [latest_close])
 quarterly_ui.append(data['Close'][-59:].tolist() + [latest_close])
 
-# Welles Volatility Index
+fig_ui = make_subplots(
+    rows=2,
+    cols=1,
+    specs=[[{"type": "candlestick"}], [{"type": "scatter"}]]
+)
+fig_ui.add_trace(
+    go.Candlestick(
+        x=data.index,
+        open=data['Open'],
+        low=data['Low'],
+        high=data['High'],
+        close=data['Close'],
+        name='S&P 500'
+    ),
+    row=1, col=1
+)
+fig_ui.add_trace(
+    go.Scatter(
+        x=data.index[-len(weekly_ui):],
+        y=weekly_ui,
+        name='Weekly UI',
+        line={'color': '#FFE4C4'}
+    ),
+    row=2, col=1,
+)
+fig_ui.add_trace(
+    go.Scatter(
+        x=data.index[-len(monthly_ui):],
+        y=monthly_ui,
+        name='Monthly UI',
+        line={'color': '#E9967A'}
+    ),
+    row=2, col=1,
+)
+fig_ui.add_trace(
+    go.Scatter(
+        x=data.index[-len(quarterly_ui):],
+        y=quarterly_ui,
+        name='Quarterly UI',
+        line={'color': '#FF7F50'}
+    ),
+    row=2, col=1,
+)
+fig_ui.update_xaxes(ticks="outside",
+              ticklabelmode="period",
+              tickcolor="white",
+              ticklen=10,
+              minor=dict(
+                 ticklen=5,
+                 dtick=7 * 24 * 60 * 60 * 1000,
+                 tick0=data.index[-1],
+                 griddash='dot',
+                 gridcolor='grey'),
+              rangebreaks=[
+                  {'bounds': ['sat', 'mon']},
+                  {'values': ['2022-09-05', '2022-11-24', '2022-12-26', '2023-01-02', '2023-01-16', '2023-02-20', '2023-04-07', '2023-05-29', '2023-06-19', '2023-07-04', '2023-09-04']}
+                          ],
+              showline=True,
+              linecolor='white',
+              gridcolor='lightpink',
+)
+fig_ui.update_layout(
+            xaxis_rangeslider_visible=False,
+            template='plotly_dark',
+            showlegend=True,
+            margin={
+                'r': 50,
+                't': 100,
+                'b': 50,
+                'l': 50
+            },
+            title_text='Ulcer Index',
+            title_font_family="Times New Roman",
+            title_font_color='white',
+            title_font_size=36,
+            font={
+                'family': "Times New Roman",
+                'color': 'white',
+                'size': 18
+            },
+        )
+fig_ui.write_image('assets/ui.png', height=800, width=1600)
 
+# Welles Volatility Index
 # TODO: Go to book to get better description, the internet has very little
 weekly_vi = bulk_volatility_indicators.volatility_index(
     data['High'].tolist(),
@@ -3397,9 +4951,7 @@ quarterly_vi = bulk_volatility_indicators.volatility_index(
     data['Close'].tolist(),
     60
 )
-
 # print(weekly_vi)
-
 weekly_vi.append(single_volatility_indicators.volatility_index(
     latest_high,
     latest_low,
@@ -3422,8 +4974,90 @@ quarterly_vi.append(single_volatility_indicators.volatility_index(
     quarterly_vi[-1]
 ))
 
-# Welles Volatility System
+fig_vi = make_subplots(
+    rows=2,
+    cols=1,
+    specs=[[{"type": "candlestick"}], [{"type": "scatter"}]]
+)
+fig_vi.add_trace(
+    go.Candlestick(
+        x=data.index,
+        open=data['Open'],
+        low=data['Low'],
+        high=data['High'],
+        close=data['Close'],
+        name='S&P 500'
+    ),
+    row=1, col=1
+)
+fig_vi.add_trace(
+    go.Scatter(
+        x=data.index[-len(weekly_vi):],
+        y=weekly_vi,
+        name='Weekly VI',
+        line={'color': '#FFE4C4'}
+    ),
+    row=2, col=1,
+)
+fig_vi.add_trace(
+    go.Scatter(
+        x=data.index[-len(monthly_vi):],
+        y=monthly_vi,
+        name='Monthly VI',
+        line={'color': '#E9967A'}
+    ),
+    row=2, col=1,
+)
+fig_vi.add_trace(
+    go.Scatter(
+        x=data.index[-len(quarterly_vi):],
+        y=quarterly_vi,
+        name='Quarterly VI',
+        line={'color': '#FF7F50'}
+    ),
+    row=2, col=1,
+)
+fig_vi.update_xaxes(ticks="outside",
+              ticklabelmode="period",
+              tickcolor="white",
+              ticklen=10,
+              minor=dict(
+                 ticklen=5,
+                 dtick=7 * 24 * 60 * 60 * 1000,
+                 tick0=data.index[-1],
+                 griddash='dot',
+                 gridcolor='grey'),
+              rangebreaks=[
+                  {'bounds': ['sat', 'mon']},
+                  {'values': ['2022-09-05', '2022-11-24', '2022-12-26', '2023-01-02', '2023-01-16', '2023-02-20', '2023-04-07', '2023-05-29', '2023-06-19', '2023-07-04', '2023-09-04']}
+                          ],
+              showline=True,
+              linecolor='white',
+              gridcolor='lightpink',
+)
+fig_vi.update_layout(
+            xaxis_rangeslider_visible=False,
+            template='plotly_dark',
+            showlegend=True,
+            margin={
+                'r': 50,
+                't': 100,
+                'b': 50,
+                'l': 50
+            },
+            title_text='Volatility Index',
+            title_font_family="Times New Roman",
+            title_font_color='white',
+            title_font_size=36,
+            font={
+                'family': "Times New Roman",
+                'color': 'white',
+                'size': 18
+            },
+        )
+fig_vi.write_image('assets/vi.png', height=800, width=1600)
 
+# Welles Volatility System
 weekly_vs = bulk_volatility_indicators.volatility_system(
     data['High'].tolist(),
     data['Low'].tolist(),
@@ -3472,103 +5106,891 @@ quarterly_vs.append(single_volatility_indicators.volatility_system(
     2,
     quarterly_vs[-1]
 ))
+#
+# fig_vs = make_subplots(
+#     rows=2,
+#     cols=1,
+#     specs=[[{"type": "candlestick"}], [{"type": "scatter"}]]
+# )
+# fig_vs.add_trace(
+#     go.Candlestick(
+#         x=data.index,
+#         open=data['Open'],
+#         low=data['Low'],
+#         high=data['High'],
+#         close=data['Close'],
+#         name='S&P 500'
+#     ),
+#     row=1, col=1
+# )
+# fig_vs.add_trace(
+#     go.Scatter(
+#         x=data.index[-len(weekly_vs):],
+#         y=weekly_vs,
+#         name='Weekly VS',
+#         line={'color': '#FFE4C4'}
+#     ),
+#     row=2, col=1,
+# )
+# fig_vs.add_trace(
+#     go.Scatter(
+#         x=data.index[-len(monthly_vs):],
+#         y=monthly_vs,
+#         name='Monthly VS',
+#         line={'color': '#E9967A'}
+#     ),
+#     row=2, col=1,
+# )
+# fig_vs.add_trace(
+#     go.Scatter(
+#         x=data.index[-len(quarterly_vs):],
+#         y=quarterly_vs,
+#         name='Quarterly VS',
+#         line={'color': '#FF7F50'}
+#     ),
+#     row=2, col=1,
+# )
+# fig_vs.update_xaxes(ticks="outside",
+#               ticklabelmode="period",
+#               tickcolor="white",
+#               ticklen=10,
+#               minor=dict(
+#                  ticklen=5,
+#                  dtick=7 * 24 * 60 * 60 * 1000,
+#                  tick0=data.index[-1],
+#                  griddash='dot',
+#                  gridcolor='grey'),
+#               rangebreaks=[
+#                   {'bounds': ['sat', 'mon']},
+#                   {'values': ['2022-09-05', '2022-11-24', '2022-12-26', '2023-01-02', '2023-01-16', '2023-02-20', '2023-04-07', '2023-05-29', '2023-06-19', '2023-07-04', '2023-09-04']}
+#                           ],
+#               showline=True,
+#               linecolor='white',
+#               gridcolor='lightpink',
+# )
+# fig_vs.update_layout(
+#             xaxis_rangeslider_visible=False,
+#             template='plotly_dark',
+#             showlegend=True,
+#             margin={
+#                 'r': 50,
+#                 't': 100,
+#                 'b': 50,
+#                 'l': 50
+#             },
+#             title_text='Volatility System',
+#             title_font_family="Times New Roman",
+#             title_font_color='white',
+#             title_font_size=36,
+#             font={
+#                 'family': "Times New Roman",
+#                 'color': 'white',
+#                 'size': 18
+#             },
+#         )
+# fig_vs.write_image('assets/vs.png', height=800, width=1600)
 
 # Correlation
-
 # Correlate asset prices
-
 # TODO: get another asset to do the correlation here
 correlation = bulk_correlation_indicators.correlate_asset_prices(data['Typical Price'].tolist(), data['Typical Price'].tolist(), 5)
-
 # print(correlation)
-
 correlation.append(single_correlation_indicators.correlate_asset_prices(
     data['Typical Price'][-4:].tolist() + [latest_typical_price],
     data['Typical Price'][-4:].tolist() + [latest_typical_price]
 ))
+fig_corr = make_subplots(
+    rows=2,
+    cols=1,
+    specs=[[{"type": "candlestick"}], [{"type": "scatter"}]]
+)
+fig_corr.add_trace(
+    go.Candlestick(
+        x=data.index,
+        open=data['Open'],
+        low=data['Low'],
+        high=data['High'],
+        close=data['Close'],
+        name='S&P 500'
+    ),
+    row=1, col=1
+)
+fig_corr.add_trace(
+    go.Scatter(
+        x=data.index[-len(correlation):],
+        y=correlation,
+        name='Weekly Correlation',
+        line={'color': '#FFE4C4'}
+    ),
+    row=2, col=1,
+)
+fig_corr.update_xaxes(ticks="outside",
+              ticklabelmode="period",
+              tickcolor="white",
+              ticklen=10,
+              minor=dict(
+                 ticklen=5,
+                 dtick=7 * 24 * 60 * 60 * 1000,
+                 tick0=data.index[-1],
+                 griddash='dot',
+                 gridcolor='grey'),
+              rangebreaks=[
+                  {'bounds': ['sat', 'mon']},
+                  {'values': ['2022-09-05', '2022-11-24', '2022-12-26', '2023-01-02', '2023-01-16', '2023-02-20', '2023-04-07', '2023-05-29', '2023-06-19', '2023-07-04', '2023-09-04']}
+                          ],
+              showline=True,
+              linecolor='white',
+              gridcolor='lightpink',
+)
+fig_corr.update_layout(
+            xaxis_rangeslider_visible=False,
+            template='plotly_dark',
+            showlegend=True,
+            margin={
+                'r': 50,
+                't': 100,
+                'b': 50,
+                'l': 50
+            },
+            title_text='Correlation',
+            title_font_family="Times New Roman",
+            title_font_color='white',
+            title_font_size=36,
+            font={
+                'family': "Times New Roman",
+                'color': 'white',
+                'size': 18
+            },
+        )
+fig_corr.write_image('assets/correlation.png', height=800, width=1600)
 
 # Support and resistance indicators
-
 # Fibonacci retracement
-
 fibonacci_retracement = bulk_support_resistance_indicators.fibonacci_retracement(data['Typical Price'].tolist())
-
 # print(fibonacci_retracement)
-
 fibonacci_retracement.append(single_support_resistance_indicators.fibonacci_retracement(latest_typical_price))
 
+fig_fibo = make_subplots(
+    rows=1,
+    cols=1,
+    specs=[[{"type": "candlestick"}]]
+)
+fig_fibo.add_trace(
+    go.Candlestick(
+        x=data.index,
+        open=data['Open'],
+        low=data['Low'],
+        high=data['High'],
+        close=data['Close'],
+        name='S&P 500'
+    ),
+    row=1, col=1
+)
+fig_fibo.add_trace(
+    go.Scatter(
+        x=data.index[-len(fibonacci_retracement):],
+        y=[fibonacci_retracement[-1][0] for i in fibonacci_retracement],
+        name='Weekly Correlation'
+    ),
+    row=1, col=1,
+)
+fig_fibo.add_trace(
+    go.Scatter(
+        x=data.index[-len(fibonacci_retracement):],
+        y=[fibonacci_retracement[-1][1] for i in fibonacci_retracement],
+        name='Weekly Correlation'
+    ),
+    row=1, col=1,
+)
+fig_fibo.add_trace(
+    go.Scatter(
+        x=data.index[-len(fibonacci_retracement):],
+        y=[fibonacci_retracement[-1][2] for i in fibonacci_retracement],
+        name='Weekly Correlation'
+    ),
+    row=1, col=1,
+)
+fig_fibo.add_trace(
+    go.Scatter(
+        x=data.index[-len(fibonacci_retracement):],
+        y=[fibonacci_retracement[-1][3] for i in fibonacci_retracement],
+        name='Weekly Correlation'
+    ),
+    row=1, col=1,
+)
+fig_fibo.add_trace(
+    go.Scatter(
+        x=data.index[-len(fibonacci_retracement):],
+        y=[fibonacci_retracement[-1][4] for i in fibonacci_retracement],
+        name='Weekly Correlation'
+    ),
+    row=1, col=1,
+)
+fig_fibo.add_trace(
+    go.Scatter(
+        x=data.index[-len(fibonacci_retracement):],
+        y=[fibonacci_retracement[-1][5] for i in fibonacci_retracement],
+        name='Weekly Correlation'
+    ),
+    row=1, col=1,
+)
+fig_fibo.add_trace(
+    go.Scatter(
+        x=data.index[-len(fibonacci_retracement):],
+        y=[fibonacci_retracement[-1][6] for i in fibonacci_retracement],
+        name='Weekly Correlation'
+    ),
+    row=1, col=1,
+)
+fig_fibo.update_xaxes(ticks="outside",
+              ticklabelmode="period",
+              tickcolor="white",
+              ticklen=10,
+              minor=dict(
+                 ticklen=5,
+                 dtick=7 * 24 * 60 * 60 * 1000,
+                 tick0=data.index[-1],
+                 griddash='dot',
+                 gridcolor='grey'),
+              rangebreaks=[
+                  {'bounds': ['sat', 'mon']},
+                  {'values': ['2022-09-05', '2022-11-24', '2022-12-26', '2023-01-02', '2023-01-16', '2023-02-20', '2023-04-07', '2023-05-29', '2023-06-19', '2023-07-04', '2023-09-04']}
+                          ],
+              showline=True,
+              linecolor='white',
+              gridcolor='lightpink',
+)
+fig_fibo.update_layout(
+            xaxis_rangeslider_visible=False,
+            template='plotly_dark',
+            showlegend=True,
+            margin={
+                'r': 50,
+                't': 100,
+                'b': 50,
+                'l': 50
+            },
+            title_text='Correlation',
+            title_font_family="Times New Roman",
+            title_font_color='white',
+            title_font_size=36,
+            font={
+                'family': "Times New Roman",
+                'color': 'white',
+                'size': 18
+            },
+        )
+fig_fibo.write_image('assets/fibo_retacement.png', height=800, width=1600)
+
 # Pivot points
-
 pivot_points = bulk_support_resistance_indicators.pivot_points(data['High'].tolist(), data['Low'].tolist(), data['Close'].tolist())
-
 # print(pivot_points)
-
 pivot_points.append(single_support_resistance_indicators.pivot_points(latest_high, latest_low, latest_close))
 
+fig_pivot = make_subplots(
+    rows=1,
+    cols=1,
+    specs=[[{"type": "candlestick"}]]
+)
+fig_pivot.add_trace(
+    go.Candlestick(
+        x=data.index,
+        open=data['Open'],
+        low=data['Low'],
+        high=data['High'],
+        close=data['Close'],
+        name='S&P 500'
+    ),
+    row=1, col=1
+)
+fig_pivot.add_trace(
+    go.Scatter(
+        x=data.index[-len(pivot_points):],
+        y=[pivot_points[-1][0] for i in pivot_points],
+        name='Pivot point'
+    ),
+    row=1, col=1,
+)
+fig_pivot.add_trace(
+    go.Scatter(
+        x=data.index[-len(pivot_points):],
+        y=[pivot_points[-1][1] for i in pivot_points],
+        name='Primary support'
+    ),
+    row=1, col=1,
+)
+fig_pivot.add_trace(
+    go.Scatter(
+        x=data.index[-len(pivot_points):],
+        y=[pivot_points[-1][2] for i in pivot_points],
+        name='Primary resistance'
+    ),
+    row=1, col=1,
+)
+fig_pivot.add_trace(
+    go.Scatter(
+        x=data.index[-len(pivot_points):],
+        y=[pivot_points[-1][3] for i in pivot_points],
+        name='Secondary support'
+    ),
+    row=1, col=1,
+)
+fig_pivot.add_trace(
+    go.Scatter(
+        x=data.index[-len(pivot_points):],
+        y=[pivot_points[-1][4] for i in pivot_points],
+        name='Secondary resistance'
+    ),
+    row=1, col=1,
+)
+fig_pivot.update_xaxes(ticks="outside",
+              ticklabelmode="period",
+              tickcolor="white",
+              ticklen=10,
+              minor=dict(
+                 ticklen=5,
+                 dtick=7 * 24 * 60 * 60 * 1000,
+                 tick0=data.index[-1],
+                 griddash='dot',
+                 gridcolor='grey'),
+              rangebreaks=[
+                  {'bounds': ['sat', 'mon']},
+                  {'values': ['2022-09-05', '2022-11-24', '2022-12-26', '2023-01-02', '2023-01-16', '2023-02-20', '2023-04-07', '2023-05-29', '2023-06-19', '2023-07-04', '2023-09-04']}
+                          ],
+              showline=True,
+              linecolor='white',
+              gridcolor='lightpink',
+)
+fig_pivot.update_layout(
+            xaxis_rangeslider_visible=False,
+            template='plotly_dark',
+            showlegend=True,
+            margin={
+                'r': 50,
+                't': 100,
+                'b': 50,
+                'l': 50
+            },
+            title_text='Pivot points',
+            title_font_family="Times New Roman",
+            title_font_color='white',
+            title_font_size=36,
+            font={
+                'family': "Times New Roman",
+                'color': 'white',
+                'size': 18
+            },
+        )
+fig_pivot.write_image('assets/pivot_points.png', height=800, width=1600)
+
 # Other indicators
-
 # Value added index
-
 value_added_index = bulk_other_indicators.value_added_index(data['Typical Price'].tolist())
-
 # print(value_added_index)
+value_added_index.append(single_other_indicators.value_added_index(data['Typical Price'].iloc[-1], latest_typical_price, value_added_index[-1]))
 
-value_added_index.append(single_other_indicators.value_added_index(data['Typical Price'][-1], latest_typical_price, value_added_index[-1]))
+fig_vai = make_subplots(
+    rows=2,
+    cols=1,
+    specs=[[{"type": "candlestick"}], [{"type": "scatter"}]]
+)
+fig_vai.add_trace(
+    go.Candlestick(
+        x=data.index,
+        open=data['Open'],
+        low=data['Low'],
+        high=data['High'],
+        close=data['Close'],
+        name='S&P 500'
+    ),
+    row=1, col=1
+)
+fig_vai.add_trace(
+    go.Scatter(
+        x=data.index[-len(value_added_index):],
+        y=value_added_index,
+        name='Value Added Index'
+    ),
+    row=2, col=1,
+)
+fig_vai.update_xaxes(ticks="outside",
+              ticklabelmode="period",
+              tickcolor="white",
+              ticklen=10,
+              minor=dict(
+                 ticklen=5,
+                 dtick=7 * 24 * 60 * 60 * 1000,
+                 tick0=data.index[-1],
+                 griddash='dot',
+                 gridcolor='grey'),
+              rangebreaks=[
+                  {'bounds': ['sat', 'mon']},
+                  {'values': ['2022-09-05', '2022-11-24', '2022-12-26', '2023-01-02', '2023-01-16', '2023-02-20', '2023-04-07', '2023-05-29', '2023-06-19', '2023-07-04', '2023-09-04']}
+                          ],
+              showline=True,
+              linecolor='white',
+              gridcolor='lightpink',
+)
+fig_vai.update_layout(
+            xaxis_rangeslider_visible=False,
+            template='plotly_dark',
+            showlegend=True,
+            margin={
+                'r': 50,
+                't': 100,
+                'b': 50,
+                'l': 50
+            },
+            title_text='Value Added Index',
+            title_font_family="Times New Roman",
+            title_font_color='white',
+            title_font_size=36,
+            font={
+                'family': "Times New Roman",
+                'color': 'white',
+                'size': 18
+            },
+        )
+fig_vai.write_image('assets/value_added_index.png', height=800, width=1600)
 
 # Chart Patterns
-
 # Get peaks
-
 weekly_peaks = peaks.get_peaks(data['High'].tolist() + [latest_high], 5)
 monthly_peaks = peaks.get_peaks(data['High'].tolist() + [latest_high], 20)
 quarterly_peaks = peaks.get_peaks(data['High'].tolist() + [latest_high], 60)
-
 # print(weekly_peaks)
 
+fig_peaks = make_subplots(
+    rows=1,
+    cols=1,
+    specs=[[{"type": "candlestick"}]]
+)
+fig_peaks.add_trace(
+    go.Candlestick(
+        x=data.index,
+        open=data['Open'],
+        low=data['Low'],
+        high=data['High'],
+        close=data['Close'],
+        name='S&P 500'
+    ),
+    row=1, col=1
+)
+fig_peaks.add_trace(
+    go.Scatter(
+        x=[data.index[i[1]] for i in weekly_peaks],
+        y=[i[0] for i in weekly_peaks],
+        name='Weekly Peaks',
+        line={'color': '#FFE4C4'},
+        mode='markers'
+    ),
+    row=1, col=1,
+)
+fig_peaks.add_trace(
+    go.Scatter(
+        x=[data.index[i[1]] for i in monthly_peaks],
+        y=[i[0] for i in monthly_peaks],
+        name='Monthly Peaks',
+        line={'color': '#E9967A'},
+        mode='markers'
+    ),
+    row=1, col=1,
+)
+fig_peaks.add_trace(
+    go.Scatter(
+        x=[data.index[i[1]] for i in quarterly_peaks],
+        y=[i[0] for i in quarterly_peaks],
+        name='Quarterly Peaks',
+        line={'color': '#FF7F50'},
+        mode='markers'
+    ),
+    row=1, col=1,
+)
+fig_peaks.update_xaxes(ticks="outside",
+              ticklabelmode="period",
+              tickcolor="white",
+              ticklen=10,
+              minor=dict(
+                 ticklen=5,
+                 dtick=7 * 24 * 60 * 60 * 1000,
+                 tick0=data.index[-1],
+                 griddash='dot',
+                 gridcolor='grey'),
+              rangebreaks=[
+                  {'bounds': ['sat', 'mon']},
+                  {'values': ['2022-09-05', '2022-11-24', '2022-12-26', '2023-01-02', '2023-01-16', '2023-02-20', '2023-04-07', '2023-05-29', '2023-06-19', '2023-07-04', '2023-09-04']}
+                          ],
+              showline=True,
+              linecolor='white',
+              gridcolor='lightpink',
+)
+fig_peaks.update_layout(
+            xaxis_rangeslider_visible=False,
+            template='plotly_dark',
+            showlegend=True,
+            margin={
+                'r': 50,
+                't': 100,
+                'b': 50,
+                'l': 50
+            },
+            title_text='Peaks',
+            title_font_family="Times New Roman",
+            title_font_color='white',
+            title_font_size=36,
+            font={
+                'family': "Times New Roman",
+                'color': 'white',
+                'size': 18
+            },
+        )
+fig_peaks.write_image('assets/peaks.png', height=800, width=1600)
+
 # Valleys
-
 # Get Valleys
-
 weekly_valleys = valleys.get_valleys(data['Low'].tolist() + [latest_low], 5)
 monthly_valleys = valleys.get_valleys(data['Low'].tolist() + [latest_low], 20)
 quarterly_valleys = valleys.get_valleys(data['Low'].tolist() + [latest_low], 60)
-
 # print(weekly_valleys)
+fig_valleys = make_subplots(
+    rows=1,
+    cols=1,
+    specs=[[{"type": "candlestick"}]]
+)
+fig_valleys.add_trace(
+    go.Candlestick(
+        x=data.index,
+        open=data['Open'],
+        low=data['Low'],
+        high=data['High'],
+        close=data['Close'],
+        name='S&P 500'
+    ),
+    row=1, col=1
+)
+fig_valleys.add_trace(
+    go.Scatter(
+        x=[data.index[i[1]] for i in weekly_valleys],
+        y=[i[0] for i in weekly_valleys],
+        name='Weekly Valleys',
+        line={'color': '#FFE4C4'},
+        mode='markers'
+    ),
+    row=1, col=1,
+)
+fig_valleys.add_trace(
+    go.Scatter(
+        x=[data.index[i[1]] for i in monthly_valleys],
+        y=[i[0] for i in monthly_valleys],
+        name='Monthly Valleys',
+        line={'color': '#E9967A'},
+        mode='markers'
+    ),
+    row=1, col=1,
+)
+fig_valleys.add_trace(
+    go.Scatter(
+        x=[data.index[i[1]] for i in quarterly_valleys],
+        y=[i[0] for i in quarterly_valleys],
+        name='Quarterly Valleys',
+        line={'color': '#FF7F50'},
+        mode='markers'
+    ),
+    row=1, col=1,
+)
+fig_valleys.update_xaxes(ticks="outside",
+              ticklabelmode="period",
+              tickcolor="white",
+              ticklen=10,
+              minor=dict(
+                 ticklen=5,
+                 dtick=7 * 24 * 60 * 60 * 1000,
+                 tick0=data.index[-1],
+                 griddash='dot',
+                 gridcolor='grey'),
+              rangebreaks=[
+                  {'bounds': ['sat', 'mon']},
+                  {'values': ['2022-09-05', '2022-11-24', '2022-12-26', '2023-01-02', '2023-01-16', '2023-02-20', '2023-04-07', '2023-05-29', '2023-06-19', '2023-07-04', '2023-09-04']}
+                          ],
+              showline=True,
+              linecolor='white',
+              gridcolor='lightpink',
+)
+fig_valleys.update_layout(
+            xaxis_rangeslider_visible=False,
+            template='plotly_dark',
+            showlegend=True,
+            margin={
+                'r': 50,
+                't': 100,
+                'b': 50,
+                'l': 50
+            },
+            title_text='Valleys',
+            title_font_family="Times New Roman",
+            title_font_color='white',
+            title_font_size=36,
+            font={
+                'family': "Times New Roman",
+                'color': 'white',
+                'size': 18
+            },
+        )
+fig_valleys.write_image('assets/valleys.png', height=800, width=1600)
 
 # Chart Trends
-
 # Get Peak Trend
-
 weekly_peak_trend = chart_trends.get_peak_trend(data['High'].tolist() + [latest_high], 5)
 monthly_peak_trend = chart_trends.get_peak_trend(data['High'].tolist() + [latest_high], 20)
 quarterly_peak_trend = chart_trends.get_peak_trend(data['High'].tolist() + [latest_high], 60)
-
 # print(weekly_peak_trend)
-
-weekly_peak_points = [(i*weekly_peak_trend[i][0]) + weekly_peak_trend[i][1] for i in range(0, len(weekly_peak_trend))]
-monthly_peak_points = [(i*monthly_peak_trend[i][0]) + monthly_peak_trend[i][1] for i in range(0, len(monthly_peak_trend))]
-quarterly_peak_points = [(i*quarterly_peak_trend[i][0]) + quarterly_peak_trend[i][1] for i in range(0, len(quarterly_peak_trend))]
+weekly_peak_points = [(i*weekly_peak_trend[0]) + weekly_peak_trend[1] for i in range(0, len(data['High'])+1)]
+monthly_peak_points = [(i*monthly_peak_trend[0]) + monthly_peak_trend[1] for i in range(0, len(data['High'])+1)]
+quarterly_peak_points = [(i*quarterly_peak_trend[0]) + quarterly_peak_trend[1] for i in range(0, len(data['High'])+1)]
+fig_ptrend = make_subplots(
+    rows=1,
+    cols=1,
+    specs=[[{"type": "candlestick"}]]
+)
+fig_ptrend.add_trace(
+    go.Candlestick(
+        x=data.index,
+        open=data['Open'],
+        low=data['Low'],
+        high=data['High'],
+        close=data['Close'],
+        name='S&P 500'
+    ),
+    row=1, col=1
+)
+fig_ptrend.add_trace(
+    go.Scatter(
+        x=data.index,
+        y=weekly_peak_points,
+        name='Weekly Trend',
+        line={'color': '#FFE4C4'}
+    ),
+    row=1, col=1,
+)
+fig_ptrend.add_trace(
+    go.Scatter(
+        x=data.index,
+        y=monthly_peak_points,
+        name='Monthly Trend',
+        line={'color': '#E9967A'}
+    ),
+    row=1, col=1,
+)
+fig_ptrend.add_trace(
+    go.Scatter(
+        x=data.index,
+        y=quarterly_peak_points,
+        name='Quarterly Trend',
+        line={'color': '#FF7F50'}
+    ),
+    row=1, col=1,
+)
+fig_ptrend.update_xaxes(ticks="outside",
+              ticklabelmode="period",
+              tickcolor="white",
+              ticklen=10,
+              minor=dict(
+                 ticklen=5,
+                 dtick=7 * 24 * 60 * 60 * 1000,
+                 tick0=data.index[-1],
+                 griddash='dot',
+                 gridcolor='grey'),
+              rangebreaks=[
+                  {'bounds': ['sat', 'mon']},
+                  {'values': ['2022-09-05', '2022-11-24', '2022-12-26', '2023-01-02', '2023-01-16', '2023-02-20', '2023-04-07', '2023-05-29', '2023-06-19', '2023-07-04', '2023-09-04']}
+                          ],
+              showline=True,
+              linecolor='white',
+              gridcolor='lightpink',
+)
+fig_ptrend.update_layout(
+            xaxis_rangeslider_visible=False,
+            template='plotly_dark',
+            showlegend=True,
+            margin={
+                'r': 50,
+                't': 100,
+                'b': 50,
+                'l': 50
+            },
+            title_text='Peak Trend',
+            title_font_family="Times New Roman",
+            title_font_color='white',
+            title_font_size=36,
+            font={
+                'family': "Times New Roman",
+                'color': 'white',
+                'size': 18
+            },
+        )
+fig_ptrend.write_image('assets/peak_trend.png', height=800, width=1600)
 
 # Get Valley Trend
-
 weekly_valley_trend = chart_trends.get_valley_trend(data['Low'].tolist() + [latest_low], 5)
 monthly_valley_trend = chart_trends.get_valley_trend(data['Low'].tolist() + [latest_low], 20)
 quarterly_valley_trend = chart_trends.get_valley_trend(data['Low'].tolist() + [latest_low], 60)
-
 # print(weekly_valley_trend)
+weekly_valley_points = [(i*weekly_valley_trend[0]) + weekly_valley_trend[1] for i in range(0, len(data['Low'])+1)]
+monthly_valley_points = [(i*monthly_valley_trend[0]) + monthly_valley_trend[1] for i in range(0, len(data['Low'])+1)]
+quarterly_valley_points = [(i*quarterly_valley_trend[0]) + quarterly_valley_trend[1] for i in range(0, len(data['Low'])+1)]
+fig_vtrend = make_subplots(
+    rows=1,
+    cols=1,
+    specs=[[{"type": "candlestick"}]]
+)
+fig_vtrend.add_trace(
+    go.Candlestick(
+        x=data.index,
+        open=data['Open'],
+        low=data['Low'],
+        high=data['High'],
+        close=data['Close'],
+        name='S&P 500'
+    ),
+    row=1, col=1
+)
+fig_vtrend.add_trace(
+    go.Scatter(
+        x=data.index,
+        y=weekly_valley_points,
+        name='Weekly Trend',
+        line={'color': '#FFE4C4'}
 
-weekly_valley_points = [(i*weekly_valley_trend[i][0]) + weekly_valley_trend[i][1] for i in range(0, len(weekly_valley_trend))]
-monthly_valley_points = [(i*monthly_valley_trend[i][0]) + monthly_valley_trend[i][1] for i in range(0, len(monthly_valley_trend))]
-quarterly_valley_points = [(i*quarterly_valley_trend[i][0]) + quarterly_valley_trend[i][1] for i in range(0, len(quarterly_valley_trend))]
+    ),
+    row=1, col=1,
+)
+fig_vtrend.add_trace(
+    go.Scatter(
+        x=data.index,
+        y=monthly_valley_points,
+        name='Monthly Trend',
+        line={'color': '#E9967A'}
+    ),
+    row=1, col=1,
+)
+fig_vtrend.add_trace(
+    go.Scatter(
+        x=data.index,
+        y=quarterly_valley_points,
+        name='Quarterly Trend',
+        line={'color': '#FF7F50'}
+    ),
+    row=1, col=1,
+)
+fig_vtrend.update_xaxes(ticks="outside",
+              ticklabelmode="period",
+              tickcolor="white",
+              ticklen=10,
+              minor=dict(
+                 ticklen=5,
+                 dtick=7 * 24 * 60 * 60 * 1000,
+                 tick0=data.index[-1],
+                 griddash='dot',
+                 gridcolor='grey'),
+              rangebreaks=[
+                  {'bounds': ['sat', 'mon']},
+                  {'values': ['2022-09-05', '2022-11-24', '2022-12-26', '2023-01-02', '2023-01-16', '2023-02-20', '2023-04-07', '2023-05-29', '2023-06-19', '2023-07-04', '2023-09-04']}
+                          ],
+              showline=True,
+              linecolor='white',
+              gridcolor='lightpink',
+)
+fig_vtrend.update_layout(
+            xaxis_rangeslider_visible=False,
+            template='plotly_dark',
+            showlegend=True,
+            margin={
+                'r': 50,
+                't': 100,
+                'b': 50,
+                'l': 50
+            },
+            title_text='Valley Trend',
+            title_font_family="Times New Roman",
+            title_font_color='white',
+            title_font_size=36,
+            font={
+                'family': "Times New Roman",
+                'color': 'white',
+                'size': 18
+            },
+        )
+fig_vtrend.write_image('assets/valley_trend.png', height=800, width=1600)
 
 # Get overall trend
-
-overall_trend = chart_trends.get_overall_trend(data['Typical Price'].tolist())
-
+overall_trend = chart_trends.get_overall_trend(data['Typical Price'].tolist() + [latest_typical_price])
 # print(overall_trend)
-
-overall_trend_points = [(i*overall_trend[i][0]) + overall_trend[i][1] for i in range(0, len(overall_trend))]
-
+overall_trend_points = [(i*overall_trend[0]) + overall_trend[1] for i in range(0, len(data['Typical Price']))]
+fig_otrend = make_subplots(
+    rows=1,
+    cols=1,
+    specs=[[{"type": "candlestick"}]]
+)
+fig_otrend.add_trace(
+    go.Candlestick(
+        x=data.index,
+        open=data['Open'],
+        low=data['Low'],
+        high=data['High'],
+        close=data['Close'],
+        name='S&P 500'
+    ),
+    row=1, col=1
+)
+fig_otrend.add_trace(
+    go.Scatter(
+        x=data.index,
+        y=overall_trend_points,
+        name='Overall Trend',
+        line={'color': '#FFE4C4'}
+    ),
+    row=1, col=1,
+)
+fig_otrend.update_xaxes(ticks="outside",
+              ticklabelmode="period",
+              tickcolor="white",
+              ticklen=10,
+              minor=dict(
+                 ticklen=5,
+                 dtick=7 * 24 * 60 * 60 * 1000,
+                 tick0=data.index[-1],
+                 griddash='dot',
+                 gridcolor='grey'),
+              rangebreaks=[
+                  {'bounds': ['sat', 'mon']},
+                  {'values': ['2022-09-05', '2022-11-24', '2022-12-26', '2023-01-02', '2023-01-16', '2023-02-20', '2023-04-07', '2023-05-29', '2023-06-19', '2023-07-04', '2023-09-04']}
+                          ],
+              showline=True,
+              linecolor='white',
+              gridcolor='lightpink',
+)
+fig_otrend.update_layout(
+            xaxis_rangeslider_visible=False,
+            template='plotly_dark',
+            showlegend=True,
+            margin={
+                'r': 50,
+                't': 100,
+                'b': 50,
+                'l': 50
+            },
+            title_text='Overall Trend',
+            title_font_family="Times New Roman",
+            title_font_color='white',
+            title_font_size=36,
+            font={
+                'family': "Times New Roman",
+                'color': 'white',
+                'size': 18
+            },
+        )
+fig_otrend.write_image('assets/overall_trend.png', height=800, width=1600)
+exit()
 # Break Down Trends
 # TODO: There are more params that should be changed below or done in another graph (denominator param)
 trends_low_sensitivity = chart_trends.break_down_trends(data['Typical Price'].tolist(), 1)
