@@ -5192,17 +5192,30 @@ quarterly_vs.append(single_volatility_indicators.volatility_system(
 
 # Correlation
 # Correlate asset prices
-# TODO: get another asset to do the correlation here
-correlation = bulk_correlation_indicators.correlate_asset_prices(data['Typical Price'].tolist(), data['Typical Price'].tolist(), 5)
+data2 = pandas.read_csv("example2.csv", sep=',', index_col=0, parse_dates=True)
+data2.index.name = 'Date'
+data2['Typical Price'] = (data['High'] + data['Low'] + data['Close']) / 3
+data2.sort_index(inplace=True)
+weekly_correlation = bulk_correlation_indicators.correlate_asset_prices(data['Typical Price'].tolist(), data2['Typical Price'].tolist(), 5)
+monthly_correlation = bulk_correlation_indicators.correlate_asset_prices(data['Typical Price'].tolist(), data2['Typical Price'].tolist(), 20)
+quarterly_correlation = bulk_correlation_indicators.correlate_asset_prices(data['Typical Price'].tolist(), data2['Typical Price'].tolist(), 60)
 # print(correlation)
-correlation.append(single_correlation_indicators.correlate_asset_prices(
+weekly_correlation.append(single_correlation_indicators.correlate_asset_prices(
     data['Typical Price'][-4:].tolist() + [latest_typical_price],
-    data['Typical Price'][-4:].tolist() + [latest_typical_price]
+    data2['Typical Price'][-4:].tolist() + [52]
+))
+monthly_correlation.append(single_correlation_indicators.correlate_asset_prices(
+    data['Typical Price'][-19:].tolist() + [latest_typical_price],
+    data2['Typical Price'][-19:].tolist() + [52]
+))
+quarterly_correlation.append(single_correlation_indicators.correlate_asset_prices(
+    data['Typical Price'][-59:].tolist() + [latest_typical_price],
+    data2['Typical Price'][-59:].tolist() + [52]
 ))
 fig_corr = make_subplots(
-    rows=2,
+    rows=5,
     cols=1,
-    specs=[[{"type": "candlestick"}], [{"type": "scatter"}]]
+    specs=[[{"type": "candlestick"}], [{"type": "candlestick"}], [{"type": "bar"}], [{"type": "bar"}], [{"type": "bar"}]]
 )
 fig_corr.add_trace(
     go.Candlestick(
@@ -5211,18 +5224,44 @@ fig_corr.add_trace(
         low=data['Low'],
         high=data['High'],
         close=data['Close'],
-        name='S&P 500'
+        name='S&P 500',
     ),
     row=1, col=1
 )
 fig_corr.add_trace(
-    go.Scatter(
-        x=data.index[-len(correlation):],
-        y=correlation,
-        name='Weekly Correlation',
-        line={'color': '#FFE4C4'}
+    go.Candlestick(
+        x=data2.index,
+        open=data2['Open'],
+        low=data2['Low'],
+        high=data2['High'],
+        close=data2['Close'],
+        name='Dow Jones',
     ),
-    row=2, col=1,
+    row=2, col=1
+)
+fig_corr.add_trace(
+    go.Bar(
+        x=data.index[-len(weekly_correlation):],
+        y=weekly_correlation,
+        name='Weekly Correlation'
+    ),
+    row=3, col=1,
+)
+fig_corr.add_trace(
+    go.Bar(
+        x=data.index[-len(monthly_correlation):],
+        y=monthly_correlation,
+        name='Weekly Correlation'
+    ),
+    row=4, col=1,
+)
+fig_corr.add_trace(
+    go.Bar(
+        x=data.index[-len(quarterly_correlation):],
+        y=quarterly_correlation,
+        name='Weekly Correlation'
+    ),
+    row=5, col=1,
 )
 fig_corr.update_xaxes(ticks="outside",
               ticklabelmode="period",
@@ -5262,126 +5301,9 @@ fig_corr.update_layout(
                 'size': 18
             },
         )
-fig_corr.write_image('assets/correlation.png', height=800, width=1600)
+fig_corr.write_image('assets/correlation.png', height=1600, width=1600)
 
 # Support and resistance indicators
-# Fibonacci retracement
-fibonacci_retracement = bulk_support_resistance_indicators.fibonacci_retracement(data['Typical Price'].tolist())
-# print(fibonacci_retracement)
-fibonacci_retracement.append(single_support_resistance_indicators.fibonacci_retracement(latest_typical_price))
-
-fig_fibo = make_subplots(
-    rows=1,
-    cols=1,
-    specs=[[{"type": "candlestick"}]]
-)
-fig_fibo.add_trace(
-    go.Candlestick(
-        x=data.index,
-        open=data['Open'],
-        low=data['Low'],
-        high=data['High'],
-        close=data['Close'],
-        name='S&P 500'
-    ),
-    row=1, col=1
-)
-fig_fibo.add_trace(
-    go.Scatter(
-        x=data.index[-len(fibonacci_retracement):],
-        y=[fibonacci_retracement[-1][0] for i in fibonacci_retracement],
-        name='Weekly Correlation'
-    ),
-    row=1, col=1,
-)
-fig_fibo.add_trace(
-    go.Scatter(
-        x=data.index[-len(fibonacci_retracement):],
-        y=[fibonacci_retracement[-1][1] for i in fibonacci_retracement],
-        name='Weekly Correlation'
-    ),
-    row=1, col=1,
-)
-fig_fibo.add_trace(
-    go.Scatter(
-        x=data.index[-len(fibonacci_retracement):],
-        y=[fibonacci_retracement[-1][2] for i in fibonacci_retracement],
-        name='Weekly Correlation'
-    ),
-    row=1, col=1,
-)
-fig_fibo.add_trace(
-    go.Scatter(
-        x=data.index[-len(fibonacci_retracement):],
-        y=[fibonacci_retracement[-1][3] for i in fibonacci_retracement],
-        name='Weekly Correlation'
-    ),
-    row=1, col=1,
-)
-fig_fibo.add_trace(
-    go.Scatter(
-        x=data.index[-len(fibonacci_retracement):],
-        y=[fibonacci_retracement[-1][4] for i in fibonacci_retracement],
-        name='Weekly Correlation'
-    ),
-    row=1, col=1,
-)
-fig_fibo.add_trace(
-    go.Scatter(
-        x=data.index[-len(fibonacci_retracement):],
-        y=[fibonacci_retracement[-1][5] for i in fibonacci_retracement],
-        name='Weekly Correlation'
-    ),
-    row=1, col=1,
-)
-fig_fibo.add_trace(
-    go.Scatter(
-        x=data.index[-len(fibonacci_retracement):],
-        y=[fibonacci_retracement[-1][6] for i in fibonacci_retracement],
-        name='Weekly Correlation'
-    ),
-    row=1, col=1,
-)
-fig_fibo.update_xaxes(ticks="outside",
-              ticklabelmode="period",
-              tickcolor="white",
-              ticklen=10,
-              minor=dict(
-                 ticklen=5,
-                 dtick=7 * 24 * 60 * 60 * 1000,
-                 tick0=data.index[-1],
-                 griddash='dot',
-                 gridcolor='grey'),
-              rangebreaks=[
-                  {'bounds': ['sat', 'mon']},
-                  {'values': ['2022-09-05', '2022-11-24', '2022-12-26', '2023-01-02', '2023-01-16', '2023-02-20', '2023-04-07', '2023-05-29', '2023-06-19', '2023-07-04', '2023-09-04']}
-                          ],
-              showline=True,
-              linecolor='white',
-              gridcolor='lightpink',
-)
-fig_fibo.update_layout(
-            xaxis_rangeslider_visible=False,
-            template='plotly_dark',
-            showlegend=True,
-            margin={
-                'r': 50,
-                't': 100,
-                'b': 50,
-                'l': 50
-            },
-            title_text='Correlation',
-            title_font_family="Times New Roman",
-            title_font_color='white',
-            title_font_size=36,
-            font={
-                'family': "Times New Roman",
-                'color': 'white',
-                'size': 18
-            },
-        )
-fig_fibo.write_image('assets/fibo_retacement.png', height=800, width=1600)
-
 # Pivot points
 pivot_points = bulk_support_resistance_indicators.pivot_points(data['High'].tolist(), data['Low'].tolist(), data['Close'].tolist())
 # print(pivot_points)
@@ -5990,10 +5912,348 @@ fig_otrend.update_layout(
             },
         )
 fig_otrend.write_image('assets/overall_trend.png', height=800, width=1600)
-exit()
+
 # Break Down Trends
 # TODO: There are more params that should be changed below or done in another graph (denominator param)
 trends_low_sensitivity = chart_trends.break_down_trends(data['Typical Price'].tolist(), 1)
-trends_default_sensitivity = chart_trends.break_down_trends(data['Typical Price'].tolist())
-trends_high_sensitivty = chart_trends.break_down_trends(data['Typical Price'].tolist(), 5)
 
+fig_bdtrend_low = make_subplots(
+    rows=1,
+    cols=1,
+    specs=[[{"type": "candlestick"}]]
+)
+fig_bdtrend_low.add_trace(
+    go.Candlestick(
+        x=data.index,
+        open=data['Open'],
+        low=data['Low'],
+        high=data['High'],
+        close=data['Close'],
+        name='S&P 500'
+    ),
+    row=1, col=1
+)
+date_index_list = data.index.tolist()
+for i in trends_low_sensitivity:
+    x_points = date_index_list[i[0]:i[1]+1]
+    y_points = [(j*i[2]) + i[3] for j in range(i[0], i[1]+1)]
+    fig_bdtrend_low.add_trace(
+        go.Scatter(
+            x=x_points,
+            y=y_points,
+            name='Trend'
+        ),
+        row=1, col=1,
+    )
+fig_bdtrend_low.update_xaxes(ticks="outside",
+              ticklabelmode="period",
+              tickcolor="white",
+              ticklen=10,
+              minor=dict(
+                 ticklen=5,
+                 dtick=7 * 24 * 60 * 60 * 1000,
+                 tick0=data.index[-1],
+                 griddash='dot',
+                 gridcolor='grey'),
+              rangebreaks=[
+                  {'bounds': ['sat', 'mon']},
+                  {'values': ['2022-09-05', '2022-11-24', '2022-12-26', '2023-01-02', '2023-01-16', '2023-02-20', '2023-04-07', '2023-05-29', '2023-06-19', '2023-07-04', '2023-09-04']}
+                          ],
+              showline=True,
+              linecolor='white',
+              gridcolor='lightpink',
+)
+fig_bdtrend_low.update_layout(
+            xaxis_rangeslider_visible=False,
+            template='plotly_dark',
+            showlegend=True,
+            margin={
+                'r': 50,
+                't': 100,
+                'b': 50,
+                'l': 50
+            },
+            title_text='Overall Trend',
+            title_font_family="Times New Roman",
+            title_font_color='white',
+            title_font_size=36,
+            font={
+                'family': "Times New Roman",
+                'color': 'white',
+                'size': 18
+            },
+        )
+fig_bdtrend_low.write_image('assets/breakdown_trends_low_std.png', height=800, width=1600)
+
+trends_default_sensitivity = chart_trends.break_down_trends(data['Typical Price'].tolist())
+fig_bdtrend_default = make_subplots(
+    rows=1,
+    cols=1,
+    specs=[[{"type": "candlestick"}]]
+)
+fig_bdtrend_default.add_trace(
+    go.Candlestick(
+        x=data.index,
+        open=data['Open'],
+        low=data['Low'],
+        high=data['High'],
+        close=data['Close'],
+        name='S&P 500'
+    ),
+    row=1, col=1
+)
+for i in trends_default_sensitivity:
+    x_points = date_index_list[i[0]:i[1]+1]
+    y_points = [(j*i[2]) + i[3] for j in range(i[0], i[1]+1)]
+    fig_bdtrend_default.add_trace(
+        go.Scatter(
+            x=x_points,
+            y=y_points,
+            name='Trend'
+        ),
+        row=1, col=1,
+    )
+fig_bdtrend_default.update_xaxes(ticks="outside",
+              ticklabelmode="period",
+              tickcolor="white",
+              ticklen=10,
+              minor=dict(
+                 ticklen=5,
+                 dtick=7 * 24 * 60 * 60 * 1000,
+                 tick0=data.index[-1],
+                 griddash='dot',
+                 gridcolor='grey'),
+              rangebreaks=[
+                  {'bounds': ['sat', 'mon']},
+                  {'values': ['2022-09-05', '2022-11-24', '2022-12-26', '2023-01-02', '2023-01-16', '2023-02-20', '2023-04-07', '2023-05-29', '2023-06-19', '2023-07-04', '2023-09-04']}
+                          ],
+              showline=True,
+              linecolor='white',
+              gridcolor='lightpink',
+)
+fig_bdtrend_default.update_layout(
+            xaxis_rangeslider_visible=False,
+            template='plotly_dark',
+            showlegend=True,
+            margin={
+                'r': 50,
+                't': 100,
+                'b': 50,
+                'l': 50
+            },
+            title_text='Overall Trend',
+            title_font_family="Times New Roman",
+            title_font_color='white',
+            title_font_size=36,
+            font={
+                'family': "Times New Roman",
+                'color': 'white',
+                'size': 18
+            },
+        )
+fig_bdtrend_default.write_image('assets/breakdown_trends_default.png', height=800, width=1600)
+
+trends_high_sensitivity = chart_trends.break_down_trends(data['Typical Price'].tolist(), 5)
+fig_bdtrend_high = make_subplots(
+    rows=1,
+    cols=1,
+    specs=[[{"type": "candlestick"}]]
+)
+fig_bdtrend_high.add_trace(
+    go.Candlestick(
+        x=data.index,
+        open=data['Open'],
+        low=data['Low'],
+        high=data['High'],
+        close=data['Close'],
+        name='S&P 500'
+    ),
+    row=1, col=1
+)
+for i in trends_high_sensitivity:
+    x_points = date_index_list[i[0]:i[1]+1]
+    y_points = [(j*i[2]) + i[3] for j in range(i[0], i[1]+1)]
+    fig_bdtrend_high.add_trace(
+        go.Scatter(
+            x=x_points,
+            y=y_points,
+            name='Trend'
+        ),
+        row=1, col=1,
+    )
+fig_bdtrend_high.update_xaxes(ticks="outside",
+              ticklabelmode="period",
+              tickcolor="white",
+              ticklen=10,
+              minor=dict(
+                 ticklen=5,
+                 dtick=7 * 24 * 60 * 60 * 1000,
+                 tick0=data.index[-1],
+                 griddash='dot',
+                 gridcolor='grey'),
+              rangebreaks=[
+                  {'bounds': ['sat', 'mon']},
+                  {'values': ['2022-09-05', '2022-11-24', '2022-12-26', '2023-01-02', '2023-01-16', '2023-02-20', '2023-04-07', '2023-05-29', '2023-06-19', '2023-07-04', '2023-09-04']}
+                          ],
+              showline=True,
+              linecolor='white',
+              gridcolor='lightpink',
+)
+fig_bdtrend_high.update_layout(
+            xaxis_rangeslider_visible=False,
+            template='plotly_dark',
+            showlegend=True,
+            margin={
+                'r': 50,
+                't': 100,
+                'b': 50,
+                'l': 50
+            },
+            title_text='Overall Trend',
+            title_font_family="Times New Roman",
+            title_font_color='white',
+            title_font_size=36,
+            font={
+                'family': "Times New Roman",
+                'color': 'white',
+                'size': 18
+            },
+        )
+fig_bdtrend_high.write_image('assets/breakdown_trends_high_std.png', height=800, width=1600)
+
+trends_low_denominator = chart_trends.break_down_trends(data['Typical Price'].tolist(), 2, 0.1)
+
+fig_bdtrend_low_denom = make_subplots(
+    rows=1,
+    cols=1,
+    specs=[[{"type": "candlestick"}]]
+)
+fig_bdtrend_low_denom.add_trace(
+    go.Candlestick(
+        x=data.index,
+        open=data['Open'],
+        low=data['Low'],
+        high=data['High'],
+        close=data['Close'],
+        name='S&P 500'
+    ),
+    row=1, col=1
+)
+for i in trends_low_denominator:
+    x_points = date_index_list[i[0]:i[1]+1]
+    y_points = [(j*i[2]) + i[3] for j in range(i[0], i[1]+1)]
+    fig_bdtrend_low_denom.add_trace(
+        go.Scatter(
+            x=x_points,
+            y=y_points,
+            name='Trend'
+        ),
+        row=1, col=1,
+    )
+fig_bdtrend_low_denom.update_xaxes(ticks="outside",
+              ticklabelmode="period",
+              tickcolor="white",
+              ticklen=10,
+              minor=dict(
+                 ticklen=5,
+                 dtick=7 * 24 * 60 * 60 * 1000,
+                 tick0=data.index[-1],
+                 griddash='dot',
+                 gridcolor='grey'),
+              rangebreaks=[
+                  {'bounds': ['sat', 'mon']},
+                  {'values': ['2022-09-05', '2022-11-24', '2022-12-26', '2023-01-02', '2023-01-16', '2023-02-20', '2023-04-07', '2023-05-29', '2023-06-19', '2023-07-04', '2023-09-04']}
+                          ],
+              showline=True,
+              linecolor='white',
+              gridcolor='lightpink',
+)
+fig_bdtrend_low_denom.update_layout(
+            xaxis_rangeslider_visible=False,
+            template='plotly_dark',
+            showlegend=True,
+            margin={
+                'r': 50,
+                't': 100,
+                'b': 50,
+                'l': 50
+            },
+            title_text='Overall Trend',
+            title_font_family="Times New Roman",
+            title_font_color='white',
+            title_font_size=36,
+            font={
+                'family': "Times New Roman",
+                'color': 'white',
+                'size': 18
+            },
+        )
+fig_bdtrend_low_denom.write_image('assets/breakdown_trends_low_denom.png', height=800, width=1600)
+
+trends_high_denom = chart_trends.break_down_trends(data['Typical Price'].tolist(), 2, 100)
+fig_bdtrend_high_denom = make_subplots(
+    rows=1,
+    cols=1,
+    specs=[[{"type": "candlestick"}]]
+)
+fig_bdtrend_high_denom.add_trace(
+    go.Candlestick(
+        x=data.index,
+        open=data['Open'],
+        low=data['Low'],
+        high=data['High'],
+        close=data['Close'],
+        name='S&P 500'
+    ),
+    row=1, col=1
+)
+for i in trends_high_denom:
+    x_points = date_index_list[i[0]:i[1]+1]
+    y_points = [(j*i[2]) + i[3] for j in range(i[0], i[1]+1)]
+    fig_bdtrend_high_denom.add_trace(
+        go.Scatter(
+            x=x_points,
+            y=y_points,
+            name='Trend'
+        ),
+        row=1, col=1,
+    )
+fig_bdtrend_high_denom.update_xaxes(ticks="outside",
+              ticklabelmode="period",
+              tickcolor="white",
+              ticklen=10,
+              minor=dict(
+                 ticklen=5,
+                 dtick=7 * 24 * 60 * 60 * 1000,
+                 tick0=data.index[-1],
+                 griddash='dot',
+                 gridcolor='grey'),
+              rangebreaks=[
+                  {'bounds': ['sat', 'mon']},
+                  {'values': ['2022-09-05', '2022-11-24', '2022-12-26', '2023-01-02', '2023-01-16', '2023-02-20', '2023-04-07', '2023-05-29', '2023-06-19', '2023-07-04', '2023-09-04']}
+                          ],
+              showline=True,
+              linecolor='white',
+              gridcolor='lightpink',
+)
+fig_bdtrend_high_denom.update_layout(
+            xaxis_rangeslider_visible=False,
+            template='plotly_dark',
+            showlegend=True,
+            margin={
+                'r': 50,
+                't': 100,
+                'b': 50,
+                'l': 50
+            },
+            title_text='Overall Trend',
+            title_font_family="Times New Roman",
+            title_font_color='white',
+            title_font_size=36,
+            font={
+                'family': "Times New Roman",
+                'color': 'white',
+                'size': 18
+            },
+        )
+fig_bdtrend_high_denom.write_image('assets/breakdown_trends_high_denom.png', height=800, width=1600)
