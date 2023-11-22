@@ -22,7 +22,7 @@ data = pandas.read_csv("new_file_name.csv", sep='\t', index_col=0, parse_dates=T
 
 /!\ Disclaimer /!\ 
 The code is not written well, and this is by design, to make it more readable and obvious. If the file is going to be 
-used, I recommend refactoring it, extracting most things into classes and function to stop the repetitive code.
+used, I recommend refactoring it, extracting most things into classes and functions to stop the  needless repetitive code.
 
 ## Explanation
 
@@ -31,66 +31,139 @@ Basic functions, mostly included in the Python STL, but enhanced to allow the pa
 calculated for a period
 
 #### Mean
-_From lines `125` to `215`_
-
 Calculates the `mean` (or average) for a list of prices. No `single` version as caller can just use `statistic.mean()` 
 function. In this example we calculate the weekly, monthly, and quarterly mean.
+```python
+# Bulk functions
+weekly_mean = bulk_basic_indicators.mean(data['Typical Price'], 5)
+monthly_mean = bulk_basic_indicators.mean(data['Typical Price'], 20)
+quarterly_mean = bulk_basic_indicators.mean(data['Typical Price'], 60)
+
+# Single functions
+weekly_mean.append(statistics.mean(data['Typical Price'][-4:].tolist()+[latest_typical_price]))
+monthly_mean.append(statistics.mean(data['Typical Price'][-19:].tolist()+[latest_typical_price]))
+quarterly_mean.append(statistics.mean(data['Typical Price'][-59:].tolist()+[latest_typical_price]))
+```
 ![mean](./assets/mean.png)
 
 #### Median
-_From lines `214` to `301`_
-
 Calculates the `median` for a list of prices. No `single` version as caller can just use
 `statistic.median()` function. In this example we calculate the weekly, monthly, and quarterly median.
+```python
+# Bulk functions
+weekly_median = bulk_basic_indicators.median(data['Typical Price'], 5)
+monthly_median = bulk_basic_indicators.median(data['Typical Price'], 20)
+quarterly_median = bulk_basic_indicators.median(data['Typical Price'], 60)
+
+# Single functions
+weekly_median.append(statistics.median(data['Typical Price'][-4:].tolist()+[latest_typical_price]))
+monthly_median.append(statistics.median(data['Typical Price'][-19:].tolist()+[latest_typical_price]))
+quarterly_median.append(statistics.median(data['Typical Price'][-59:].tolist()+[latest_typical_price]))
+```
 ![median](./assets/median.png)
 
 #### Standard Deviation
-_From lines `303` to `390`_
-
 Calculates the `standard_deviation` for a list of prices. No `single` version as caller can just use
 `statistic.stdev()` function. In this example we calculate the weekly, monthly, and quarterly standard deviation.
+```python
+# Bulk functions
+weekly_standard_deviation = bulk_basic_indicators.standard_deviation(data['Typical Price'], 5)
+monthly_standard_deviation = bulk_basic_indicators.standard_deviation(data['Typical Price'], 20)
+quarterly_standard_deviation = bulk_basic_indicators.standard_deviation(data['Typical Price'], 60)
+
+# Single functions
+weekly_standard_deviation.append(statistics.stdev(data['Typical Price'][-4:].tolist()+[latest_typical_price]))
+monthly_standard_deviation.append(statistics.stdev(data['Typical Price'][-19:].tolist()+[latest_typical_price]))
+quarterly_standard_deviation.append(statistics.stdev(data['Typical Price'][-59:].tolist()+[latest_typical_price]))
+```
 ![standard_deviation](./assets/standard_deviation.png)
 
 #### Variance
-_From lines `392` to `379`_
-
 Calculates the `variance` for a list of prices. No `single` version as caller can just use
 `statistic.variance()` function. In this example we calculate the weekly, monthly, and quarterly variance.
+```python
+# Bulk functions
+weekly_variance = bulk_basic_indicators.variance(data['Typical Price'], 5)
+monthly_variance = bulk_basic_indicators.variance(data['Typical Price'], 20)
+quarterly_variance = bulk_basic_indicators.variance(data['Typical Price'], 60)
+
+# Single functions
+weekly_variance.append(statistics.variance(data['Typical Price'][-4:].tolist()+[latest_typical_price]))
+monthly_variance.append(statistics.variance(data['Typical Price'][-19:].tolist()+[latest_typical_price]))
+quarterly_variance.append(statistics.variance(data['Typical Price'][-59:].tolist()+[latest_typical_price]))
+```
 ![variance](./assets/variance.png)
 
 #### Mean Aboslute Deviation
-_From lines `570` to `568`_
-
 Calculates the `mean_absolute_deviation` for a list of prices. In this example we calculate the 
 weekly, monthly, and quarterly mean absolute deviation.
+```python
+# Bulk functions
+weekly_mean_absolute_deviation = bulk_basic_indicators.mean_absolute_deviation(data['Typical Price'], 5)
+monthly_mean_absolute_deviation = bulk_basic_indicators.mean_absolute_deviation(data['Typical Price'], 20)
+quarterly_mean_absolute_deviation = bulk_basic_indicators.mean_absolute_deviation(data['Typical Price'], 60)
+
+# Single functions
+weekly_mean_absolute_deviation.append(single_basic_indicator.mean_absolute_deviation(data['Typical Price'][-4:].tolist()+[latest_typical_price]))
+monthly_mean_absolute_deviation.append(single_basic_indicator.mean_absolute_deviation(data['Typical Price'][-19:].tolist()+[latest_typical_price]))
+quarterly_mean_absolute_deviation.append(single_basic_indicator.mean_absolute_deviation(data['Typical Price'][-59:].tolist()+[latest_typical_price]))
+```
 ![mean_absolute_deviation](./assets/mean_absolute_deviation.png)
 
 #### Median Absolute Deviation
-_From lines `570` to `657`_
-
-Calculates the `median_absolute_deviation` for a list of prices. In this example we calculate the 
+alculates the `median_absolute_deviation` for a list of prices. In this example we calculate the 
 weekly, monthly, and quarterly median absolute deviation.
+```python
+# Bulk functions
+weekly_median_absolute_deviation = bulk_basic_indicators.median_absolute_deviation(data['Typical Price'], 5)
+monthly_median_absolute_deviation = bulk_basic_indicators.median_absolute_deviation(data['Typical Price'], 20)
+quarterly_median_absolute_deviation = bulk_basic_indicators.median_absolute_deviation(data['Typical Price'], 60)
+
+# Single functions
+weekly_median_absolute_deviation.append(single_basic_indicator.median_absolute_deviation(data['Typical Price'][-4:].tolist()+[latest_typical_price]))
+monthly_median_absolute_deviation.append(single_basic_indicator.median_absolute_deviation(data['Typical Price'][-19:].tolist()+[latest_typical_price]))
+quarterly_median_absolute_deviation.append(single_basic_indicator.median_absolute_deviation(data['Typical Price'][-59:].tolist()+[latest_typical_price]))
+```
 ![median_absolute_deviation](./assets/median_absolute_deviation.png)
 
 #### Mode Absolute Deviation
-_From lines `659` to `568`_
-
 Calculates the `mode_absolute_deviation` for a list of prices. In this example we calculate the 
 weekly, monthly, and quarterly mode absolute deviation.
+```python
+# Bulk functions
+weekly_mode_absolute_deviation = bulk_basic_indicators.mode_absolute_deviation(data['Typical Price'], 5)
+monthly_mode_absolute_deviation = bulk_basic_indicators.mode_absolute_deviation(data['Typical Price'], 20)
+quarterly_mode_absolute_deviation = bulk_basic_indicators.mode_absolute_deviation(data['Typical Price'], 60)
+
+# Single functions
+weekly_mode_absolute_deviation.append(single_basic_indicator.mode_absolute_deviation(data['Typical Price'][-4:].tolist()+[latest_typical_price]))
+monthly_mode_absolute_deviation.append(single_basic_indicator.mode_absolute_deviation(data['Typical Price'][-19:].tolist()+[latest_typical_price]))
+quarterly_mode_absolute_deviation.append(single_basic_indicator.mode_absolute_deviation(data['Typical Price'][-59:].tolist()+[latest_typical_price]))
+```
 ![mode_absolute_deviation](./assets/mode_absolute_deviation.png)
 
 #### Logarithm
-_From lines `748` to `568`_
-
 Calculates the `log` for a list of prices. No `single` version as caller can just use
 `math.log()` function.
+```python
+# Bulk function
+log = bulk_basic_indicators.log(data['Typical Price'].tolist())
+
+# Single function
+log.append(math.log(latest_typical_price))
+```
 ![logarithm](./assets/logarithm.png)
 
 #### Log difference
-_From lines `818` to `888`_
-
 Calculates the `log_diff` for a list of prices. No `single` version as caller can just use
 `math.log()` function and do the difference between log t-1 and t.
+```python
+# Bulk function
+log_diff = bulk_basic_indicators.log_diff(data['Typical Price'].tolist())
+
+# Single function
+log_diff.append(math.log(data['Typical Price'].iloc[-1]) - math.log(latest_typical_price))
+```
 ![logarithm_difference](./assets/logarithm_difference.png)
 
 ### Moving Averages
