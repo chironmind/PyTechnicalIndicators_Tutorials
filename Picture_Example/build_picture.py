@@ -123,13 +123,10 @@ fig.update_layout(
 fig.write_image('assets/OHLC.png', height=800, width=1600)
 
 # Mean
-
 weekly_mean = bulk_basic_indicators.mean(data['Typical Price'], 5)
 monthly_mean = bulk_basic_indicators.mean(data['Typical Price'], 20)
 quarterly_mean = bulk_basic_indicators.mean(data['Typical Price'], 60)
-
 # print(weekly_mean)
-
 weekly_mean.append(statistics.mean(data['Typical Price'][-4:].tolist()+[latest_typical_price]))
 monthly_mean.append(statistics.mean(data['Typical Price'][-19:].tolist()+[latest_typical_price]))
 quarterly_mean.append(statistics.mean(data['Typical Price'][-59:].tolist()+[latest_typical_price]))
@@ -215,13 +212,10 @@ fig_mean.update_layout(
 fig_mean.write_image('assets/mean.png', height=800, width=1600)
 
 # Median
-
 weekly_median = bulk_basic_indicators.median(data['Typical Price'], 5)
 monthly_median = bulk_basic_indicators.median(data['Typical Price'], 20)
 quarterly_median = bulk_basic_indicators.median(data['Typical Price'], 60)
-
 # print(weekly_median)
-
 weekly_median.append(statistics.median(data['Typical Price'][-4:].tolist()+[latest_typical_price]))
 monthly_median.append(statistics.median(data['Typical Price'][-19:].tolist()+[latest_typical_price]))
 quarterly_median.append(statistics.median(data['Typical Price'][-59:].tolist()+[latest_typical_price]))
@@ -307,13 +301,10 @@ fig_median.update_layout(
 fig_median.write_image('assets/median.png', height=800, width=1600)
 
 # Standard Deviation
-
 weekly_standard_deviation = bulk_basic_indicators.standard_deviation(data['Typical Price'], 5)
 monthly_standard_deviation = bulk_basic_indicators.standard_deviation(data['Typical Price'], 20)
 quarterly_standard_deviation = bulk_basic_indicators.standard_deviation(data['Typical Price'], 60)
-
 # print(weekly_standard_deviation)
-
 weekly_standard_deviation.append(statistics.stdev(data['Typical Price'][-4:].tolist()+[latest_typical_price]))
 monthly_standard_deviation.append(statistics.stdev(data['Typical Price'][-19:].tolist()+[latest_typical_price]))
 quarterly_standard_deviation.append(statistics.stdev(data['Typical Price'][-59:].tolist()+[latest_typical_price]))
@@ -399,13 +390,10 @@ fig_stdev.update_layout(
 fig_stdev.write_image('assets/standard_deviation.png', height=800, width=1600)
 
 # Variance
-
 weekly_variance = bulk_basic_indicators.variance(data['Typical Price'], 5)
 monthly_variance = bulk_basic_indicators.variance(data['Typical Price'], 20)
 quarterly_variance = bulk_basic_indicators.variance(data['Typical Price'], 60)
-
 # print(weekly_variance)
-
 weekly_variance.append(statistics.variance(data['Typical Price'][-4:].tolist()+[latest_typical_price]))
 monthly_variance.append(statistics.variance(data['Typical Price'][-19:].tolist()+[latest_typical_price]))
 quarterly_variance.append(statistics.variance(data['Typical Price'][-59:].tolist()+[latest_typical_price]))
@@ -491,13 +479,10 @@ fig_var.update_layout(
 fig_var.write_image('assets/variance.png', height=800, width=1600)
 
 # Mean absolute deviation
-
 weekly_mean_absolute_deviation = bulk_basic_indicators.mean_absolute_deviation(data['Typical Price'], 5)
 monthly_mean_absolute_deviation = bulk_basic_indicators.mean_absolute_deviation(data['Typical Price'], 20)
 quarterly_mean_absolute_deviation = bulk_basic_indicators.mean_absolute_deviation(data['Typical Price'], 60)
-
 # print(weekly_mean_absolute_deviation)
-
 weekly_mean_absolute_deviation.append(single_basic_indicator.mean_absolute_deviation(data['Typical Price'][-4:].tolist()+[latest_typical_price]))
 monthly_mean_absolute_deviation.append(single_basic_indicator.mean_absolute_deviation(data['Typical Price'][-19:].tolist()+[latest_typical_price]))
 quarterly_mean_absolute_deviation.append(single_basic_indicator.mean_absolute_deviation(data['Typical Price'][-59:].tolist()+[latest_typical_price]))
@@ -583,13 +568,10 @@ fig_mad.update_layout(
 fig_mad.write_image('assets/mean_absolute_deviation.png', height=800, width=1600)
 
 # Median absolute deviation
-
 weekly_median_absolute_deviation = bulk_basic_indicators.median_absolute_deviation(data['Typical Price'], 5)
 monthly_median_absolute_deviation = bulk_basic_indicators.median_absolute_deviation(data['Typical Price'], 20)
 quarterly_median_absolute_deviation = bulk_basic_indicators.median_absolute_deviation(data['Typical Price'], 60)
-
 # print(weekly_median_absolute_deviation)
-
 weekly_median_absolute_deviation.append(single_basic_indicator.median_absolute_deviation(data['Typical Price'][-4:].tolist()+[latest_typical_price]))
 monthly_median_absolute_deviation.append(single_basic_indicator.median_absolute_deviation(data['Typical Price'][-19:].tolist()+[latest_typical_price]))
 quarterly_median_absolute_deviation.append(single_basic_indicator.median_absolute_deviation(data['Typical Price'][-59:].tolist()+[latest_typical_price]))
@@ -675,13 +657,10 @@ fig_mdad.update_layout(
 fig_mdad.write_image('assets/median_absolute_deviation.png', height=800, width=1600)
 
 # Mode absolute deviation
-
 weekly_mode_absolute_deviation = bulk_basic_indicators.mode_absolute_deviation(data['Typical Price'], 5)
 monthly_mode_absolute_deviation = bulk_basic_indicators.mode_absolute_deviation(data['Typical Price'], 20)
 quarterly_mode_absolute_deviation = bulk_basic_indicators.mode_absolute_deviation(data['Typical Price'], 60)
-
 # print(weekly_mode_absolute_deviation)
-
 weekly_mode_absolute_deviation.append(single_basic_indicator.mode_absolute_deviation(data['Typical Price'][-4:].tolist()+[latest_typical_price]))
 monthly_mode_absolute_deviation.append(single_basic_indicator.mode_absolute_deviation(data['Typical Price'][-19:].tolist()+[latest_typical_price]))
 quarterly_mode_absolute_deviation.append(single_basic_indicator.mode_absolute_deviation(data['Typical Price'][-59:].tolist()+[latest_typical_price]))
@@ -767,14 +746,10 @@ fig_mead.update_layout(
 fig_mead.write_image('assets/mode_absolute_deviation.png', height=800, width=1600)
 
 # Logarithm
-
-# TODO: Figure why it is used
-
 log = bulk_basic_indicators.log(data['Typical Price'].tolist())
-
 # print(log)
-
 log.append(math.log(latest_typical_price))
+
 fig_log = make_subplots(
     rows=1,
     cols=1,
@@ -1748,8 +1723,8 @@ fig_so.update_layout(
                 'size': 18
             },
         )
-fig_so.write_image('assets/stochastic_oscillator.png', height=800, width=1600)
 fig_so.update_yaxes(row=2, col=1, range=[0, 100])
+fig_so.write_image('assets/stochastic_oscillator.png', height=800, width=1600)
 
 # Personalised Stochastic Oscillator
 
@@ -1862,8 +1837,8 @@ fig_pso.update_layout(
                 'size': 18
             },
         )
-fig_pso.write_image('assets/personalised_stochastic_oscillator.png', height=800, width=1600)
 fig_pso.update_yaxes(row=2, col=1, range=[0, 100])
+fig_pso.write_image('assets/personalised_stochastic_oscillator.png', height=800, width=1600)
 
 # Fast Stochastic
 
@@ -1954,8 +1929,8 @@ fig_fs.update_layout(
                 'size': 18
             },
         )
-fig_fs.write_image('assets/fast_stochastic.png', height=800, width=1600)
 fig_fs.update_yaxes(row=2, col=1, range=[0, 100])
+fig_fs.write_image('assets/fast_stochastic.png', height=800, width=1600)
 
 # Slow Stochastic
 
@@ -2047,8 +2022,8 @@ fig_ss.update_layout(
                 'size': 18
             },
         )
-fig_ss.write_image('assets/slow_stochastic.png', height=800, width=1600)
 fig_ss.update_yaxes(row=2, col=1, range=[0, 100])
+fig_ss.write_image('assets/slow_stochastic.png', height=800, width=1600)
 
 # Slow Stochastic DS
 
@@ -2140,8 +2115,8 @@ fig_ssd.update_layout(
                 'size': 18
             },
         )
-fig_ssd.write_image('assets/slow_stochastic_ds.png', height=800, width=1600)
 fig_ssd.update_yaxes(row=2, col=1, range=[0, 100])
+fig_ssd.write_image('assets/slow_stochastic_ds.png', height=800, width=1600)
 
 # Visualizing the stochastics
 
@@ -2363,8 +2338,8 @@ fig_mfi.update_layout(
                 'size': 18
             },
         )
-fig_mfi.write_image('assets/money_flow_index.png', height=800, width=1600)
 fig_mfi.update_yaxes(row=2, col=1, range=[0, 100])
+fig_mfi.write_image('assets/money_flow_index.png', height=800, width=1600)
 
 # Personalised Money Flow Index
 
@@ -2477,8 +2452,8 @@ fig_pmfi.update_layout(
                 'size': 18
             },
         )
-fig_pmfi.write_image('assets/personalised_money_flow_index.png', height=800, width=1600)
 fig_pmfi.update_yaxes(row=2, col=1, range=[0, 100])
+fig_pmfi.write_image('assets/personalised_money_flow_index.png', height=800, width=1600)
 
 # Chaikin Oscillator
 chaikin_oscillator = bulk_oscillators.chaikin_oscillator(data['High'].tolist(), data['Low'].tolist(), data['Close'].tolist(), data['Volume'].tolist())
@@ -2657,6 +2632,8 @@ quarterly_williams_percent_r = bulk_oscillators.williams_percent_r(data['High'].
 # print(weekly_williams_percent_r)
 
 weekly_williams_percent_r.append(single_oscillators.williams_percent_r(latest_high, latest_low, latest_close))
+monthly_williams_percent_r.append(single_oscillators.williams_percent_r(latest_high, latest_low, latest_close))
+quarterly_williams_percent_r.append(single_oscillators.williams_percent_r(latest_high, latest_low, latest_close))
 
 fig_wr = make_subplots(
     rows=2,
@@ -2848,8 +2825,8 @@ fig_rsi.update_layout(
                 'size': 18
             },
         )
-fig_rsi.write_image('assets/rsi.png', height=800, width=1600)
 fig_rsi.update_yaxes(row=2, col=1, range=[0, 100])
+fig_rsi.write_image('assets/rsi.png', height=800, width=1600)
 
 # Personalised RSI
 weekly_rsi = bulk_strength_indicators.relative_strength_index(data['Typical Price'].tolist(), 5, 'ema')
@@ -4121,7 +4098,7 @@ bollinger_bands.append(single_candle_indicators.bollinger_bands(data['Typical Pr
 
 lower_band = [i[0] for i in bollinger_bands]
 upper_band = [i[1] for i in bollinger_bands]
-# moving_average = [i[2] for i in bolinger_bands]
+bb_moving_average = [i[2] for i in bollinger_bands]
 fig_bband = make_subplots(
     rows=1,
     cols=1,
@@ -4153,6 +4130,15 @@ fig_bband.add_trace(
         y=upper_band,
         name='Upper Band',
         line={'color': 'red'}
+    ),
+    row=1, col=1,
+)
+fig_bband.add_trace(
+    go.Scatter(
+        x=data.index[-len(bb_moving_average):],
+        y=bb_moving_average,
+        name='Moving Average',
+        line={'color': 'blue'}
     ),
     row=1, col=1,
 )
@@ -4222,7 +4208,7 @@ weekly_bband.append(single_candle_indicators.bollinger_bands(
 
 weekly_lower_band = [i[0] for i in weekly_bband]
 weekly_upper_band = [i[1] for i in weekly_bband]
-# moving_average = [i[2] for i in bolinger_bands]
+weekly_moving_average = [i[2] for i in weekly_bband]
 fig_wbband = make_subplots(
     rows=1,
     cols=1,
@@ -4257,16 +4243,15 @@ fig_wbband.add_trace(
     ),
     row=1, col=1,
 )
-# fig_bband.add_trace(
-#     go.Scatter(
-#         x=data.index[-len(quarterly_psar_points):],
-#         y=quarterly_psar_points,
-#         name='Quarterly Parabolic SaR',
-#         line={'color': '#FF7F50'},
-#         mode='markers'
-#     ),
-#     row=1, col=1,
-# )
+fig_wbband.add_trace(
+    go.Scatter(
+        x=data.index[-len(weekly_moving_average):],
+        y=weekly_moving_average,
+        name='Moving Average',
+        line={'color': 'blue'}
+    ),
+    row=1, col=1,
+)
 fig_wbband.update_xaxes(ticks="outside",
               ticklabelmode="period",
               tickcolor="white",
@@ -4315,7 +4300,7 @@ monthly_bband.append(single_candle_indicators.bollinger_bands(
 
 monthly_lower_band = [i[0] for i in monthly_bband]
 monthly_upper_band = [i[1] for i in monthly_bband]
-# moving_average = [i[2] for i in monthly_bband]
+monthly_moving_average = [i[2] for i in monthly_bband]
 fig_mbband = make_subplots(
     rows=1,
     cols=1,
@@ -4350,16 +4335,15 @@ fig_mbband.add_trace(
     ),
     row=1, col=1,
 )
-# fig_bband.add_trace(
-#     go.Scatter(
-#         x=data.index[-len(quarterly_psar_points):],
-#         y=quarterly_psar_points,
-#         name='Quarterly Parabolic SaR',
-#         line={'color': '#FF7F50'},
-#         mode='markers'
-#     ),
-#     row=1, col=1,
-# )
+fig_mbband.add_trace(
+    go.Scatter(
+        x=data.index[-len(monthly_moving_average):],
+        y=monthly_moving_average,
+        name='Moving Average',
+        line={'color': 'blue'}
+    ),
+    row=1, col=1,
+)
 fig_mbband.update_xaxes(ticks="outside",
               ticklabelmode="period",
               tickcolor="white",
@@ -4408,13 +4392,13 @@ quarterly_bband.append(single_candle_indicators.bollinger_bands(
 
 quarterly_lower_band = [i[0] for i in quarterly_bband]
 quarterly_upper_band = [i[1] for i in quarterly_bband]
-# moving_average = [i[2] for i in quarterly_bband]
-fig_mbband = make_subplots(
+quarterly_moving_average = [i[2] for i in quarterly_bband]
+fig_qbband = make_subplots(
     rows=1,
     cols=1,
     specs=[[{"type": "candlestick"}]]
 )
-fig_mbband.add_trace(
+fig_qbband.add_trace(
     go.Candlestick(
         x=data.index,
         open=data['Open'],
@@ -4425,7 +4409,7 @@ fig_mbband.add_trace(
     ),
     row=1, col=1
 )
-fig_mbband.add_trace(
+fig_qbband.add_trace(
     go.Scatter(
         x=data.index[-len(quarterly_lower_band):],
         y=quarterly_lower_band,
@@ -4434,7 +4418,7 @@ fig_mbband.add_trace(
     ),
     row=1, col=1,
 )
-fig_mbband.add_trace(
+fig_qbband.add_trace(
     go.Scatter(
         x=data.index[-len(quarterly_upper_band):],
         y=quarterly_upper_band,
@@ -4443,17 +4427,16 @@ fig_mbband.add_trace(
     ),
     row=1, col=1,
 )
-# fig_bband.add_trace(
-#     go.Scatter(
-#         x=data.index[-len(quarterly_psar_points):],
-#         y=quarterly_psar_points,
-#         name='Quarterly Parabolic SaR',
-#         line={'color': '#FF7F50'},
-#         mode='markers'
-#     ),
-#     row=1, col=1,
-# )
-fig_mbband.update_xaxes(ticks="outside",
+fig_qbband.add_trace(
+    go.Scatter(
+        x=data.index[-len(quarterly_moving_average):],
+        y=quarterly_moving_average,
+        name='Moving Average',
+        line={'color': 'blue'}
+    ),
+    row=1, col=1,
+)
+fig_qbband.update_xaxes(ticks="outside",
               ticklabelmode="period",
               tickcolor="white",
               ticklen=10,
@@ -4471,7 +4454,7 @@ fig_mbband.update_xaxes(ticks="outside",
               linecolor='white',
               gridcolor='lightpink',
 )
-fig_mbband.update_layout(
+fig_qbband.update_layout(
             xaxis_rangeslider_visible=False,
             template='plotly_dark',
             showlegend=True,
@@ -4491,7 +4474,7 @@ fig_mbband.update_layout(
                 'size': 18
             },
         )
-fig_mbband.write_image('assets/quarterly_bband.png', height=800, width=1600)
+fig_qbband.write_image('assets/quarterly_bband.png', height=800, width=1600)
 
 # Ichimoku Cloud
 ichimoku_cloud = bulk_candle_indicators.ichimoku_cloud(data['High'].tolist(), data['Low'].tolist(), data['Close'].tolist())
@@ -4547,7 +4530,7 @@ fig_icloud.add_trace(
         x=data.index[-len(icloud_base_line):],
         y=icloud_base_line,
         name='Base Line',
-        line={'color': 'lightgreen'}
+        line={'color': 'lightsalmon'}
     ),
     row=1, col=1,
 )
@@ -4556,7 +4539,7 @@ fig_icloud.add_trace(
         x=data.index[-len(icloud_conversion_line):],
         y=icloud_conversion_line,
         name='Conversion Line',
-        line={'color': 'lightsalmon'}
+        line={'color': 'lightblue'}
     ),
     row=1, col=1,
 )
@@ -4565,7 +4548,7 @@ fig_icloud.add_trace(
         x=data.index[-len(icloud_lagged_price):],
         y=icloud_lagged_price,
         name='Lagged Price',
-        line={'color': 'blue'}
+        line={'color': 'lightgreen'}
     ),
     row=1, col=1,
 )
@@ -4667,7 +4650,7 @@ fig_picloud.add_trace(
         x=data.index[-len(picloud_base_line):],
         y=picloud_base_line,
         name='Base Line',
-        line={'color': 'lightgreen'}
+        line={'color': 'lightsalmon'}
     ),
     row=1, col=1,
 )
@@ -4676,7 +4659,7 @@ fig_picloud.add_trace(
         x=data.index[-len(picloud_conversion_line):],
         y=picloud_conversion_line,
         name='Conversion Line',
-        line={'color': 'lightsalmon'}
+        line={'color': 'lightblue'}
     ),
     row=1, col=1,
 )
@@ -4685,7 +4668,7 @@ fig_picloud.add_trace(
         x=data.index[-len(picloud_lagged_price):],
         y=picloud_lagged_price,
         name='Lagged Price',
-        line={'color': 'blue'}
+        line={'color': 'lightgreen'}
     ),
     row=1, col=1,
 )
@@ -5106,95 +5089,102 @@ quarterly_vs.append(single_volatility_indicators.volatility_system(
     2,
     quarterly_vs[-1]
 ))
-#
-# fig_vs = make_subplots(
-#     rows=2,
-#     cols=1,
-#     specs=[[{"type": "candlestick"}], [{"type": "scatter"}]]
-# )
-# fig_vs.add_trace(
-#     go.Candlestick(
-#         x=data.index,
-#         open=data['Open'],
-#         low=data['Low'],
-#         high=data['High'],
-#         close=data['Close'],
-#         name='S&P 500'
-#     ),
-#     row=1, col=1
-# )
-# fig_vs.add_trace(
-#     go.Scatter(
-#         x=data.index[-len(weekly_vs):],
-#         y=weekly_vs,
-#         name='Weekly VS',
-#         line={'color': '#FFE4C4'}
-#     ),
-#     row=2, col=1,
-# )
-# fig_vs.add_trace(
-#     go.Scatter(
-#         x=data.index[-len(monthly_vs):],
-#         y=monthly_vs,
-#         name='Monthly VS',
-#         line={'color': '#E9967A'}
-#     ),
-#     row=2, col=1,
-# )
-# fig_vs.add_trace(
-#     go.Scatter(
-#         x=data.index[-len(quarterly_vs):],
-#         y=quarterly_vs,
-#         name='Quarterly VS',
-#         line={'color': '#FF7F50'}
-#     ),
-#     row=2, col=1,
-# )
-# fig_vs.update_xaxes(ticks="outside",
-#               ticklabelmode="period",
-#               tickcolor="white",
-#               ticklen=10,
-#               minor=dict(
-#                  ticklen=5,
-#                  dtick=7 * 24 * 60 * 60 * 1000,
-#                  tick0=data.index[-1],
-#                  griddash='dot',
-#                  gridcolor='grey'),
-#               rangebreaks=[
-#                   {'bounds': ['sat', 'mon']},
-#                   {'values': ['2022-09-05', '2022-11-24', '2022-12-26', '2023-01-02', '2023-01-16', '2023-02-20', '2023-04-07', '2023-05-29', '2023-06-19', '2023-07-04', '2023-09-04']}
-#                           ],
-#               showline=True,
-#               linecolor='white',
-#               gridcolor='lightpink',
-# )
-# fig_vs.update_layout(
-#             xaxis_rangeslider_visible=False,
-#             template='plotly_dark',
-#             showlegend=True,
-#             margin={
-#                 'r': 50,
-#                 't': 100,
-#                 'b': 50,
-#                 'l': 50
-#             },
-#             title_text='Volatility System',
-#             title_font_family="Times New Roman",
-#             title_font_color='white',
-#             title_font_size=36,
-#             font={
-#                 'family': "Times New Roman",
-#                 'color': 'white',
-#                 'size': 18
-#             },
-#         )
-# fig_vs.write_image('assets/vs.png', height=800, width=1600)
+
+vs_weekly_points = [i[2] for i in weekly_vs]
+vs_monthly_points = [i[2] for i in monthly_vs]
+vs_quarterly_points = [i[2] for i in quarterly_vs]
+
+fig_vs = make_subplots(
+    rows=1,
+    cols=1,
+    specs=[[{"type": "candlestick"}]]
+)
+fig_vs.add_trace(
+    go.Candlestick(
+        x=data.index,
+        open=data['Open'],
+        low=data['Low'],
+        high=data['High'],
+        close=data['Close'],
+        name='S&P 500'
+    ),
+    row=1, col=1
+)
+fig_vs.add_trace(
+    go.Scatter(
+        x=data.index[-len(vs_weekly_points):],
+        y=vs_weekly_points,
+        name='Weekly VS',
+        line={'color': '#FFE4C4'},
+        mode='markers'
+    ),
+    row=1, col=1,
+)
+fig_vs.add_trace(
+    go.Scatter(
+        x=data.index[-len(vs_monthly_points):],
+        y=vs_monthly_points,
+        name='Monthly VS',
+        line={'color': '#E9967A'},
+        mode='markers'
+    ),
+    row=1, col=1,
+)
+fig_vs.add_trace(
+    go.Scatter(
+        x=data.index[-len(vs_quarterly_points):],
+        y=vs_quarterly_points,
+        name='Quarterly VS',
+        line={'color': '#FF7F50'},
+        mode='markers'
+    ),
+    row=1, col=1,
+)
+fig_vs.update_xaxes(ticks="outside",
+              ticklabelmode="period",
+              tickcolor="white",
+              ticklen=10,
+              minor=dict(
+                 ticklen=5,
+                 dtick=7 * 24 * 60 * 60 * 1000,
+                 tick0=data.index[-1],
+                 griddash='dot',
+                 gridcolor='grey'),
+              rangebreaks=[
+                  {'bounds': ['sat', 'mon']},
+                  {'values': ['2022-09-05', '2022-11-24', '2022-12-26', '2023-01-02', '2023-01-16', '2023-02-20', '2023-04-07', '2023-05-29', '2023-06-19', '2023-07-04', '2023-09-04']}
+                          ],
+              showline=True,
+              linecolor='white',
+              gridcolor='lightpink',
+)
+fig_vs.update_layout(
+            xaxis_rangeslider_visible=False,
+            template='plotly_dark',
+            showlegend=True,
+            margin={
+                'r': 50,
+                't': 100,
+                'b': 50,
+                'l': 50
+            },
+            title_text='Volatility System',
+            title_font_family="Times New Roman",
+            title_font_color='white',
+            title_font_size=36,
+            font={
+                'family': "Times New Roman",
+                'color': 'white',
+                'size': 18
+            },
+        )
+fig_vs.write_image('assets/vs.png', height=800, width=1600)
 
 # Correlation
 # Correlate asset prices
 data2 = pandas.read_csv("example2.csv", sep=',', index_col=0, parse_dates=True)
 data2.index.name = 'Date'
-data2['Typical Price'] = (data['High'] + data['Low'] + data['Close']) / 3
+data2['Typical Price'] = (data2['High'] + data2['Low'] + data2['Close']) / 3
 data2.sort_index(inplace=True)
 weekly_correlation = bulk_correlation_indicators.correlate_asset_prices(data['Typical Price'].tolist(), data2['Typical Price'].tolist(), 5)
 monthly_correlation = bulk_correlation_indicators.correlate_asset_prices(data['Typical Price'].tolist(), data2['Typical Price'].tolist(), 20)
@@ -5215,26 +5205,20 @@ quarterly_correlation.append(single_correlation_indicators.correlate_asset_price
 fig_corr = make_subplots(
     rows=5,
     cols=1,
-    specs=[[{"type": "candlestick"}], [{"type": "candlestick"}], [{"type": "bar"}], [{"type": "bar"}], [{"type": "bar"}]]
+    specs=[[{"type": "scatter"}], [{"type": "scatter"}], [{"type": "bar"}], [{"type": "bar"}], [{"type": "bar"}]]
 )
 fig_corr.add_trace(
-    go.Candlestick(
+    go.Scatter(
         x=data.index,
-        open=data['Open'],
-        low=data['Low'],
-        high=data['High'],
-        close=data['Close'],
+        y=data['Typical Price'],
         name='S&P 500',
     ),
     row=1, col=1
 )
 fig_corr.add_trace(
-    go.Candlestick(
+    go.Scatter(
         x=data2.index,
-        open=data2['Open'],
-        low=data2['Low'],
-        high=data2['High'],
-        close=data2['Close'],
+        y=data2['Typical Price'],
         name='Dow Jones',
     ),
     row=2, col=1
@@ -5251,7 +5235,7 @@ fig_corr.add_trace(
     go.Bar(
         x=data.index[-len(monthly_correlation):],
         y=monthly_correlation,
-        name='Weekly Correlation'
+        name='Monthly Correlation'
     ),
     row=4, col=1,
 )
@@ -5259,7 +5243,7 @@ fig_corr.add_trace(
     go.Bar(
         x=data.index[-len(quarterly_correlation):],
         y=quarterly_correlation,
-        name='Weekly Correlation'
+        name='Quarterly Correlation'
     ),
     row=5, col=1,
 )
@@ -5301,6 +5285,7 @@ fig_corr.update_layout(
                 'size': 18
             },
         )
+fig_corr.update_layout(xaxis_rangeslider_visible=False)
 fig_corr.write_image('assets/correlation.png', height=1600, width=1600)
 
 # Support and resistance indicators
@@ -5406,17 +5391,18 @@ fig_pivot.update_layout(
 fig_pivot.write_image('assets/pivot_points.png', height=800, width=1600)
 
 # Other indicators
-# Value added index
-value_added_index = bulk_other_indicators.value_added_index(data['Typical Price'].tolist())
+# Return on investment
+return_on_investment = bulk_other_indicators.return_on_investment(data['Typical Price'].tolist())
 # print(value_added_index)
-value_added_index.append(single_other_indicators.value_added_index(data['Typical Price'].iloc[-1], latest_typical_price, value_added_index[-1]))
-
-fig_vai = make_subplots(
-    rows=2,
+return_on_investment.append(single_other_indicators.return_on_investment(data['Typical Price'].iloc[-1], latest_typical_price, return_on_investment[-1][0]))
+actual_return = [i[0] for i in return_on_investment]
+percent_return = [i[1] for i in return_on_investment]
+fig_roi = make_subplots(
+    rows=3,
     cols=1,
-    specs=[[{"type": "candlestick"}], [{"type": "scatter"}]]
+    specs=[[{"type": "candlestick"}], [{"type": "scatter"}], [{"type": "bar"}]]
 )
-fig_vai.add_trace(
+fig_roi.add_trace(
     go.Candlestick(
         x=data.index,
         open=data['Open'],
@@ -5427,15 +5413,23 @@ fig_vai.add_trace(
     ),
     row=1, col=1
 )
-fig_vai.add_trace(
+fig_roi.add_trace(
     go.Scatter(
-        x=data.index[-len(value_added_index):],
-        y=value_added_index,
-        name='Value Added Index'
+        x=data.index[-len(actual_return):],
+        y=actual_return,
+        name='Actual Returns'
     ),
     row=2, col=1,
 )
-fig_vai.update_xaxes(ticks="outside",
+fig_roi.add_trace(
+    go.Bar(
+        x=data.index[-len(percent_return):],
+        y=percent_return,
+        name='% Returns'
+    ),
+    row=3, col=1,
+)
+fig_roi.update_xaxes(ticks="outside",
               ticklabelmode="period",
               tickcolor="white",
               ticklen=10,
@@ -5453,7 +5447,7 @@ fig_vai.update_xaxes(ticks="outside",
               linecolor='white',
               gridcolor='lightpink',
 )
-fig_vai.update_layout(
+fig_roi.update_layout(
             xaxis_rangeslider_visible=False,
             template='plotly_dark',
             showlegend=True,
@@ -5463,7 +5457,7 @@ fig_vai.update_layout(
                 'b': 50,
                 'l': 50
             },
-            title_text='Value Added Index',
+            title_text='Return on Investment',
             title_font_family="Times New Roman",
             title_font_color='white',
             title_font_size=36,
@@ -5473,7 +5467,7 @@ fig_vai.update_layout(
                 'size': 18
             },
         )
-fig_vai.write_image('assets/value_added_index.png', height=800, width=1600)
+fig_roi.write_image('assets/return_on_investment.png', height=800, width=1600)
 
 # Chart Patterns
 # Get peaks
@@ -5914,7 +5908,6 @@ fig_otrend.update_layout(
 fig_otrend.write_image('assets/overall_trend.png', height=800, width=1600)
 
 # Break Down Trends
-# TODO: There are more params that should be changed below or done in another graph (denominator param)
 trends_low_sensitivity = chart_trends.break_down_trends(data['Typical Price'].tolist(), 1)
 
 fig_bdtrend_low = make_subplots(
