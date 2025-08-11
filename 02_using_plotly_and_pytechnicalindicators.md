@@ -7,7 +7,7 @@ This tutorial is the second in the series:
 - 02 - Using PyTechnicalIndicators with Plotly
 - [03 - More advanced use cases for PyTechnicalIndicators](./03_advanced_pytechnicalindicators.md)
 - [04 - Connecting to an API](./04_api_connection.md)
-- [05 - Using PyTechnicalIndicators with Jupyter Notebooks](./05_using_jupyter_and_pytechnicalindicators.md)
+- [05 - Using PyTechnicalIndicators with Jupyter Notebooks](./05_using_jupyter_and_pytechnicalindicators.ipynb)
 
 ---
 
